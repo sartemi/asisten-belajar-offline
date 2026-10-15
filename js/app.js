@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Parser & Engine
   const parser = new ModuleParser(window.REFERENCE_P13_DATA || []);
-  let aiEngine = new OfflineAIEngine([]);
+  let aiEngine = new OfflineAIEngine([], window.REFERENCE_P13_DATA || []);
   let quizEngine = new OfflineQuizEngine([]);
 
   // DOM Elements - Sidebar
@@ -199,7 +199,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function updateEngines() {
-    aiEngine = new OfflineAIEngine(state.modules);
+    aiEngine = new OfflineAIEngine(state.modules, window.REFERENCE_P13_DATA || []);
     quizEngine = new OfflineQuizEngine(state.modules);
   }
 
@@ -366,7 +366,7 @@ document.addEventListener('DOMContentLoaded', () => {
     state.chatHistory = [];
 
     if (state.modules.length === 0) {
-      addMessage('ai', 'Halo! Saya **Asisten Belajar Offline**. Kamu bisa mengobrol santai, menanyakan cuaca, sains, tips belajar, atau mengunggah file modul di sidebar kiri untuk mulai mendalami materi pelajaran!');
+      addMessage('ai', 'Halo! Kenalin, aku **Boni**, teman belajar AI kamu di sini! 😊\n\nKamu bisa tanya apa saja ke aku—mulai dari materi pelajaran, sains seru, tips belajar santai, hitung matematika, sampai ngobrol ringan pas butuh jeda. Kalau kamu punya file modul (.txt / .pdf), klik tombol **"Upload File Modul"** atau **"Muat Bahan P13"** di sidebar kiri biar kita bisa bedah materinya bareng ya!');
       renderQuickChips([
         'Bagaimana cuaca hari ini?',
         'Tips belajar fokus',
@@ -374,14 +374,15 @@ document.addEventListener('DOMContentLoaded', () => {
         'Hitung 25 x 14'
       ]);
     } else {
-      addMessage('ai', 'Halo! Saya Asisten Belajar Offline. Pilih modul di sidebar kiri, lalu ketik pertanyaanmu atau klik Rangkum.');
+      const curMod = aiEngine.getModule(state.activeModuleId);
+      const modName = curMod ? curMod.shortName : 'modul';
+      addMessage('ai', `Hai! Aku **Boni**, siap nemenin kamu belajar **${modName}**. Tanyain konsep apa pun yang bikin penasaran, atau klik tombol **Rangkum** kalau mau intisari babnya ya! 🚀`);
       
       if (state.activeModuleId === 'modul_02') {
         addMessage('user', 'Jelaskan fungsi asam klorida (HCl) dan pepsin dalam sistem pencernaan!');
-        addMessage('ai', 'Asam klorida (HCl) diproduksi sel parietal lambung. Fungsinya: (1) mengaktifkan pepsinogen menjadi pepsin, (2) membunuh bakteri patogen, (3) menciptakan pH asam untuk kerja enzim. Pepsin sendiri berfungsi memecah protein menjadi polipeptida melalui hidrolisis ikatan peptida.', 'Sumber: Modul_02_Biologi... - Bab 3, Hal. 14');
+        addMessage('ai', 'Nah, di dalam lambung kita itu ada cairan super tangguh namanya **asam klorida (HCl)**. Cairan ini dihasilkan oleh sel parietal di dinding lambung.\n\nKenapa tubuh butuh HCl? Nih ada 3 tugas pentingnya:\n1. 🛡️ **Pelindung dari kuman**: Suasana lambung dibuat sangat asam (pH 1,5–2) supaya bakteri jahat di makanan langsung musnah.\n2. ⚡ **Membangunkan enzim**: Enzim pemotong protein asalnya masih "tidur" dalam bentuk *pepsinogen*. Nah, asam HCl inilah tombol "ON" yang mengubahnya jadi **pepsin** aktif!\n3. 🥩 **Melunakkan makanan**: Asam ini mengurai struktur protein agar enzim lebih mudah mencernanya.\n\nSetelah aktif, si **pepsin** langsung bekerja memecah protein kompleks jadi pepton (polipeptida sederhana) lewat hidrolisis ikatan peptida.\n\nKeren kan mekanisme tubuh kita? Mau lanjut bahas enzim lambung lainnya seperti renin?', 'Sumber: Modul_02_Biologi... - Bab 3, Hal. 14');
         chatInputEl.value = 'Apa itu renin dan apa bedanya dengan pepsin?';
       }
-      const curMod = aiEngine.getModule(state.activeModuleId);
       if (curMod) {
         renderQuickChips(curMod);
       }
@@ -403,8 +404,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const formattedText = msg.text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
                                     .replace(/\n/g, '<br>');
       row.innerHTML = `
-        <div class="ai-avatar">AI</div>
+        <div class="ai-avatar" title="Boni • Teman Belajar AI">🤖</div>
         <div class="ai-bubble-container">
+          <div class="ai-sender-name">Boni • Teman Belajar</div>
           <div class="ai-bubble">${formattedText}</div>
           ${msg.source ? `<div class="ai-source">${msg.source}</div>` : ''}
         </div>
@@ -412,9 +414,10 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       row.innerHTML = `
         <div class="user-bubble-container">
-          <div class="user-bubble">${escapeHtml(msg.text)}</div>
+          <div class="user-sender-name">Kamu</div>
+          <div class="user-bubble">${escapeHtml(msg.text).replace(/\n/g, '<br>')}</div>
         </div>
-        <div class="user-avatar">S</div>
+        <div class="user-avatar" title="Kamu">S</div>
       `;
     }
 
@@ -431,23 +434,33 @@ document.addEventListener('DOMContentLoaded', () => {
     showTypingIndicator();
 
     setTimeout(() => {
-      removeTypingIndicator();
-      const response = aiEngine.generateAnswer(text, state.activeModuleId);
-      addMessage('ai', response.text, response.source);
+      try {
+        removeTypingIndicator();
+        const response = aiEngine.generateAnswer(text, state.activeModuleId);
+        if (response && response.text) {
+          addMessage('ai', response.text, response.source);
+        } else {
+          addMessage('ai', 'Pertanyaanmu menarik banget! Coba ceritakan lebih spesifik bagian mana yang ingin kita pelajari bareng ya kawan! 😊');
+        }
 
-      if (response.suggestions && response.suggestions.length > 0) {
-        renderQuickChips(response.suggestions);
-      }
+        if (response && response.suggestions && response.suggestions.length > 0) {
+          renderQuickChips(response.suggestions);
+        }
 
-      if (response.action === 'switch_to_quiz') {
-        const actionBtn = document.createElement('button');
-        actionBtn.className = 'inline-action-btn';
-        actionBtn.innerHTML = '⚡ Buka Generator Kuis Sekarang';
-        actionBtn.addEventListener('click', () => switchTab('quiz'));
-        chatMessagesEl.appendChild(actionBtn);
-        chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
+        if (response && response.action === 'switch_to_quiz') {
+          const actionBtn = document.createElement('button');
+          actionBtn.className = 'inline-action-btn';
+          actionBtn.innerHTML = '⚡ Buka Generator Kuis Sekarang';
+          actionBtn.addEventListener('click', () => switchTab('quiz'));
+          chatMessagesEl.appendChild(actionBtn);
+          chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
+        }
+      } catch (err) {
+        console.error('Error handling chat response:', err);
+        removeTypingIndicator();
+        addMessage('ai', 'Wah, sempat ada sedikit kendala memproses pesanmu, tapi tenang aku sudah di sini lagi! Boleh coba tanyakan sekali lagi kawan? Aku siap bantu jawab! 😊');
       }
-    }, 350);
+    }, 320);
   }
 
   function showTypingIndicator() {
@@ -455,9 +468,12 @@ document.addEventListener('DOMContentLoaded', () => {
     typing.id = 'typingIndicator';
     typing.className = 'chat-message-row ai-row';
     typing.innerHTML = `
-      <div class="ai-avatar">AI</div>
-      <div class="ai-bubble typing-bubble">
-        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      <div class="ai-avatar" title="Boni • Sedang mengetik...">🤖</div>
+      <div class="ai-bubble-container">
+        <div class="ai-sender-name">Boni • Sedang mengetik...</div>
+        <div class="ai-bubble typing-bubble">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        </div>
       </div>
     `;
     chatMessagesEl.appendChild(typing);
@@ -480,17 +496,22 @@ document.addEventListener('DOMContentLoaded', () => {
   btnRangkum.addEventListener('click', () => {
     if (state.modules.length === 0) {
       showStatusNotification('Silakan upload atau muat modul materi terlebih dahulu!');
-      addMessage('ai', 'Fitur **Rangkuman Otomatis** membutuhkan modul materi ajar. Silakan unggah modul (.txt / .pdf) atau klik tombol **"Muat Bahan P13"** di sidebar kiri terlebih dahulu!');
+      addMessage('ai', 'Fitur **Rangkuman Otomatis** membutuhkan modul materi ajar. Silakan unggah modul (.txt / .pdf) atau klik tombol **"Muat Bahan P13"** di sidebar kiri terlebih dahulu ya kawan!');
       return;
     }
     const curMod = aiEngine.getModule(state.activeModuleId);
     addMessage('user', `Rangkum ${curMod.fullName}`);
     showTypingIndicator();
     setTimeout(() => {
-      removeTypingIndicator();
-      const summaryResp = aiEngine.generateSummaryResponse(curMod);
-      addMessage('ai', summaryResp.text, summaryResp.source);
-    }, 350);
+      try {
+        removeTypingIndicator();
+        const summaryResp = aiEngine.generateSummaryResponse(curMod);
+        addMessage('ai', summaryResp.text, summaryResp.source);
+      } catch (err) {
+        removeTypingIndicator();
+        addMessage('ai', 'Maaf kawan, rangkuman belum bisa dimuat saat ini. Coba pilih ulang modul di sidebar ya!');
+      }
+    }, 320);
   });
 
   moduleSearchInput.addEventListener('input', (e) => {

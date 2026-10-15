@@ -476,41 +476,65 @@ body {
 
 /* Avatars */
 .ai-avatar {
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   background: #ccfbf1;
   color: #0f766e;
+  font-weight: 700;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(15, 118, 110, 0.15);
+  border: 1.5px solid #99f6e4;
+}
+
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--user-avatar-bg);
+  color: var(--user-avatar-text);
   font-weight: 700;
   font-size: 13px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  box-shadow: 0 2px 4px rgba(15, 118, 110, 0.1);
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.12);
+  border: 1.5px solid #bfdbfe;
 }
 
-.user-avatar {
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  background: var(--user-avatar-bg);
-  color: var(--user-avatar-text);
+/* Sender Labels */
+.ai-sender-name {
+  font-size: 11.5px;
   font-weight: 700;
-  font-size: 14px;
+  color: #0f766e;
   display: flex;
   align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.1);
+  gap: 4px;
+  padding-left: 2px;
+  letter-spacing: 0.2px;
+}
+
+.user-sender-name {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #2563eb;
+  text-align: right;
+  padding-right: 2px;
+  margin-bottom: 3px;
+  letter-spacing: 0.2px;
 }
 
 /* Bubbles */
 .ai-bubble-container {
-  max-width: 76%;
+  max-width: 78%;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 5px;
 }
 
 .ai-bubble {
@@ -525,14 +549,22 @@ body {
 }
 
 .ai-source {
-  font-size: 12.5px;
+  font-size: 12px;
   color: var(--teal-text);
-  font-weight: 500;
+  font-weight: 600;
   padding-left: 4px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 6px;
+  padding: 4px 8px;
+  width: fit-content;
+  margin-top: 2px;
 }
 
 .user-bubble-container {
-  max-width: 72%;
+  max-width: 74%;
+  display: flex;
+  flex-direction: column;
 }
 
 .user-bubble {
