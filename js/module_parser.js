@@ -31,23 +31,33 @@ class ModuleParser {
     const filename = file.name;
     const lowerName = filename.toLowerCase();
 
+    let textContent = '';
+    if (lowerName.endsWith('.txt') || lowerName.endsWith('.md')) {
+      textContent = await this.readTextFile(file);
+    } else if (lowerName.endsWith('.pdf')) {
+      textContent = await this.extractPdfText(file);
+    }
+
     // 1. Cek kecocokan dengan pustaka referensi Bahan Latihan P13
     const matchedRef = this.findReferenceMatch(filename);
     if (matchedRef) {
-      // Salin object agar independen
-      return JSON.parse(JSON.stringify(matchedRef));
+      const cloned = JSON.parse(JSON.stringify(matchedRef));
+      if (textContent) {
+        cloned.content = textContent;
+        cloned.lines = textContent.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
+        // Tambahkan QA pairs hasil ekstraksi teks dokumen
+        const extraQA = this.generateAutoQAPairs(cloned.shortName, cloned.lines);
+        if (extraQA.length > 0) {
+          cloned.qaPairs = [...(cloned.qaPairs || []), ...extraQA];
+        }
+        cloned.chunks = this.createChunks(textContent, cloned.shortName, cloned.chapters);
+      }
+      return cloned;
     }
 
-    // 2. Jika file kustom .txt atau .md
-    if (lowerName.endsWith('.txt') || lowerName.endsWith('.md')) {
-      const text = await this.readTextFile(file);
-      return this.buildModuleFromText(filename, text);
-    }
-
-    // 3. Jika file .pdf kustom
-    if (lowerName.endsWith('.pdf')) {
-      const text = await this.extractPdfText(file);
-      return this.buildModuleFromText(filename, text || 'Dokumen Modul PDF');
+    // 2. Jika file kustom .txt, .md, atau .pdf
+    if (textContent) {
+      return this.buildModuleFromText(filename, textContent);
     }
 
     return null;
@@ -81,7 +91,6 @@ class ModuleParser {
       const reader = new FileReader();
       reader.onload = (e) => {
         const buffer = e.target.result;
-        // Ekstraksi string teks dasar dari buffer biner PDF
         try {
           const bytes = new Uint8Array(buffer);
           let str = '';
@@ -115,6 +124,7 @@ class ModuleParser {
     // Generate QA pairs otomatis dari kalimat-kalimat penting
     const qaPairs = this.generateAutoQAPairs(shortName, lines);
     const quizQuestions = this.generateAutoQuiz(lines, subject);
+    const chunks = this.createChunks(fullText, shortName, chapters);
 
     return {
       id: 'mod_' + Math.random().toString(36).substr(2, 8),
@@ -125,29 +135,73 @@ class ModuleParser {
       totalHal: Math.max(1, Math.ceil(lines.length / 30)),
       icon: '📘',
       summary: lines.slice(0, 4).join(' '),
+      content: fullText,
+      lines: lines,
+      chunks: chunks,
       chapters: chapters.length > 0 ? chapters : [{ bab: 1, judul: 'Materi Inti', hal: '1 - 5' }],
       qaPairs: qaPairs,
       quickPrompts: [
         `Rangkum ${shortName}`,
         `Jelaskan poin penting dalam materi ini!`,
-        `Buat kuis untuk materi ini`
+        `Buatkan kuis untuk materi ini`,
+        `Buatkan 3 flashcard tentang materi ini`
       ],
       quizQuestions: quizQuestions
     };
   }
 
+  createChunks(fullText, shortName, chapters = []) {
+    if (!fullText) return [];
+    const paragraphs = fullText.split(/\r?\n\s*\r?\n/).map(p => p.trim()).filter(p => p.length > 20);
+    const chunks = [];
+    let currentChapter = chapters && chapters.length > 0 ? chapters[0].judul : 'Materi Pembelajaran';
+
+    for (let i = 0; i < paragraphs.length; i++) {
+      const p = paragraphs[i];
+      // Periksa apakah paragraf ini adalah judul bab baru
+      const matchedChapter = (chapters || []).find(ch => p.toLowerCase().includes(ch.judul.toLowerCase().slice(0, 20)));
+      if (matchedChapter) {
+        currentChapter = matchedChapter.judul;
+      }
+
+      chunks.push({
+        id: `chunk_${i + 1}`,
+        text: p,
+        chapter: currentChapter,
+        source: `Sumber: ${shortName} • ${currentChapter}`
+      });
+    }
+
+    // Jika paragraf sedikit (dokumen pendek/tanpa jeda paragraf), buat chunk per kelompok baris
+    if (chunks.length <= 1) {
+      const lines = fullText.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
+      const groupSize = 4;
+      for (let i = 0; i < lines.length; i += groupSize) {
+        const slice = lines.slice(i, i + groupSize);
+        chunks.push({
+          id: `chunk_line_${i + 1}`,
+          text: slice.join(' '),
+          chapter: currentChapter,
+          source: `Sumber: ${shortName} • Baris ${i + 1}–${Math.min(i + groupSize, lines.length)}`
+        });
+      }
+    }
+
+    return chunks;
+  }
+
   detectSubject(filename, text) {
     const lower = (filename + ' ' + text).toLowerCase();
-    if (lower.includes('biologi') || lower.includes('pencernaan') || lower.includes('sel')) return 'Biologi';
+    if (lower.includes('biologi') || lower.includes('pencernaan') || lower.includes('sel') || lower.includes('organ')) return 'Biologi';
     if (lower.includes('sejarah') || lower.includes('proklamasi') || lower.includes('kemerdekaan')) return 'Sejarah';
-    if (lower.includes('fisika') || lower.includes('newton') || lower.includes('gaya')) return 'Fisika';
-    if (lower.includes('kimia') || lower.includes('reaksi') || lower.includes('entalpi')) return 'Kimia';
-    if (lower.includes('matematika') || lower.includes('kalkulus') || lower.includes('integral')) return 'Matematika';
-    if (lower.includes('sosiologi') || lower.includes('sosial') || lower.includes('konflik')) return 'Sosiologi';
-    if (lower.includes('geografi') || lower.includes('bumi') || lower.includes('lempeng')) return 'Geografi';
-    if (lower.includes('ekonomi') || lower.includes('bank') || lower.includes('uang')) return 'Ekonomi';
-    if (lower.includes('informatika') || lower.includes('komputer') || lower.includes('jaringan')) return 'Informatika';
-    if (lower.includes('indonesia') || lower.includes('sastra') || lower.includes('karya ilmiah')) return 'Bahasa Indonesia';
+    if (lower.includes('fisika') || lower.includes('newton') || lower.includes('gaya') || lower.includes('energi')) return 'Fisika';
+    if (lower.includes('kimia') || lower.includes('reaksi') || lower.includes('entalpi') || lower.includes('termokimia')) return 'Kimia';
+    if (lower.includes('matematika') || lower.includes('kalkulus') || lower.includes('integral') || lower.includes('turunan')) return 'Matematika';
+    if (lower.includes('sosiologi') || lower.includes('sosial') || lower.includes('konflik') || lower.includes('struktur')) return 'Sosiologi';
+    if (lower.includes('geografi') || lower.includes('bumi') || lower.includes('lempeng') || lower.includes('litosfer')) return 'Geografi';
+    if (lower.includes('ekonomi') || lower.includes('bank') || lower.includes('uang') || lower.includes('inflasi')) return 'Ekonomi';
+    if (lower.includes('informatika') || lower.includes('komputer') || lower.includes('jaringan') || lower.includes('cpu')) return 'Informatika';
+    if (lower.includes('indonesia') || lower.includes('sastra') || lower.includes('karya ilmiah') || lower.includes('eksposisi')) return 'Bahasa Indonesia';
     return 'Umum';
   }
 
@@ -156,7 +210,7 @@ class ModuleParser {
     let count = 1;
 
     for (const line of lines) {
-      if (/^(bab\s+\d+|[0-9]+\.\s+[A-Z])/i.test(line)) {
+      if (/^(bab\s+\d+|[0-9]+\.\s+[A-Z]|pasal\s+\d+|bagian\s+\d+)/i.test(line)) {
         chapters.push({
           bab: count,
           judul: line.slice(0, 70),
@@ -171,16 +225,34 @@ class ModuleParser {
 
   generateAutoQAPairs(shortName, lines) {
     const pairs = [];
-    for (let i = 0; i < Math.min(lines.length, 25); i++) {
+    for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
-      if (line.includes(':') && line.length > 30) {
+      // Format 1: Bagian dengan titik dua "Istilah: Definisi"
+      if (line.includes(':') && line.length > 25 && line.length < 500) {
         const parts = line.split(':');
+        const term = parts[0].replace(/^[0-9a-zA-Z\.\-\s]+/, '').trim();
+        if (term.length >= 3) {
+          pairs.push({
+            keywords: [term.toLowerCase(), ...term.toLowerCase().split(/\s+/)].filter(w => w.length > 2),
+            answer: line,
+            source: `Sumber: ${shortName} - Baris ${i + 1}`
+          });
+        }
+      }
+      // Format 2: Kalimat definisi dengan kata "adalah", "merupakan", "berfungsi", "terdiri dari"
+      else if (
+        /\b(adalah|merupakan|berfungsi|terdiri dari|didefinisikan)\b/i.test(line) &&
+        line.length > 30 && line.length < 400
+      ) {
+        const words = line.split(/\s+/).slice(0, 6);
         pairs.push({
-          keywords: parts[0].toLowerCase().split(/\s+/),
+          keywords: words.map(w => w.toLowerCase().replace(/[^a-z0-9]/g, '')).filter(w => w.length > 2),
           answer: line,
-          source: `Sumber: ${shortName} - Bab 1`
+          source: `Sumber: ${shortName} - Teks Dokumen`
         });
       }
+
+      if (pairs.length >= 40) break;
     }
     return pairs;
   }
@@ -223,4 +295,7 @@ class ModuleParser {
 
 if (typeof window !== 'undefined') {
   window.ModuleParser = ModuleParser;
+}
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { ModuleParser };
 }

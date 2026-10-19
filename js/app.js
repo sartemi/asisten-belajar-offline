@@ -4,12 +4,46 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+  const DEFAULT_AI_SETTINGS = {
+    provider: 'offline', // 'offline' | 'gemini' | 'ollama' | 'openai'
+    geminiKey: '',
+    geminiApiKey: '',
+    geminiModel: 'gemini-2.0-flash',
+    ollamaUrl: 'http://localhost:11434',
+    ollamaModel: 'llama3',
+    openaiKey: '',
+    openaiApiKey: '',
+    openaiUrl: 'https://api.openai.com/v1',
+    openaiModel: 'gpt-4o-mini'
+  };
+
+  function loadAiSettings() {
+    try {
+      const saved = localStorage.getItem('asisten_belajar_ai_settings');
+      if (saved) {
+        return Object.assign({}, DEFAULT_AI_SETTINGS, JSON.parse(saved));
+      }
+    } catch (e) {
+      console.warn('Failed to load AI settings from localStorage:', e);
+    }
+    return Object.assign({}, DEFAULT_AI_SETTINGS);
+  }
+
+  function saveAiSettings(settings) {
+    try {
+      localStorage.setItem('asisten_belajar_ai_settings', JSON.stringify(settings));
+    } catch (e) {
+      console.warn('Failed to save AI settings to localStorage:', e);
+    }
+  }
+
   // State Aplikasi
   const state = {
     modules: [],             // AWALNYA KOSONG sesuai instruksi pengguna
     activeModuleId: null,    // Belum ada yang dipilih sampai user upload
     activeTab: 'chatbot',    // 'chatbot' atau 'quiz'
-    chatHistory: [],
+    conversations: {},       // Keyed per modul/general: { 'general': [...], 'modul_01': [...], ... }
+    aiSettings: loadAiSettings(),
     searchKeyword: '',
     quizSettings: {
       count: 5,
@@ -177,7 +211,6 @@ document.addEventListener('DOMContentLoaded', () => {
         renderModules();
         selectModule('modul_02');
         showStatusNotification('10 Modul Bahan P13 berhasil dimuat!');
-        resetChatMessages();
       }
     });
   }
@@ -192,7 +225,7 @@ document.addEventListener('DOMContentLoaded', () => {
         updateEngines();
         renderModules();
         updateHeaderAndBadges();
-        resetChatMessages();
+        renderCurrentThread();
         showStatusNotification('Daftar modul telah dikosongkan.');
       }
     });
@@ -277,10 +310,8 @@ document.addEventListener('DOMContentLoaded', () => {
       el.classList.toggle('active', el.getAttribute('data-id') === moduleId);
     });
 
-    const curMod = aiEngine.getModule(moduleId);
-    if (curMod) {
-      renderQuickChips(curMod);
-    }
+    // Render percakapan modul ini (terisolasi per modul/topik)
+    renderCurrentThread();
 
     // Jika sedang di tab kuis, auto-generate atau refresh kuis untuk modul ini
     if (state.activeTab === 'quiz') {
@@ -361,37 +392,77 @@ document.addEventListener('DOMContentLoaded', () => {
   // 4. CHATBOT INTERAKSI
   // ==========================================
 
-  function resetChatMessages() {
-    chatMessagesEl.innerHTML = '';
-    state.chatHistory = [];
+  // ==========================================
+  // 4. CHATBOT INTERAKSI (ISOLATED THREADS & AI ENGINE)
+  // ==========================================
 
-    if (state.modules.length === 0) {
-      addMessage('ai', 'Halo! Kenalin, aku **Boni**, teman belajar AI kamu di sini! 😊\n\nKamu bisa tanya apa saja ke aku—mulai dari materi pelajaran, sains seru, tips belajar santai, hitung matematika, sampai ngobrol ringan pas butuh jeda. Kalau kamu punya file modul (.txt / .pdf), klik tombol **"Upload File Modul"** atau **"Muat Bahan P13"** di sidebar kiri biar kita bisa bedah materinya bareng ya!');
-      renderQuickChips([
-        'Bagaimana cuaca hari ini?',
-        'Tips belajar fokus',
-        'Kenapa bisa hujan?',
-        'Hitung 25 x 14'
-      ]);
+  function getCurrentThreadKey() {
+    return state.activeModuleId || 'general';
+  }
+
+  function initThreadWelcome(threadKey) {
+    if (!state.conversations[threadKey]) {
+      state.conversations[threadKey] = [];
+    }
+    if (state.conversations[threadKey].length > 0) return;
+
+    if (!state.activeModuleId || state.modules.length === 0) {
+      state.conversations[threadKey].push({
+        sender: 'ai',
+        text: 'Halo! Kenalin, aku **Boni**, teman belajar dan teman diskusimu di sini! 😊\n\nKamu bisa ngobrol santai atau tanya apa saja ke aku—mulai dari wawasan sains seru, filosofi hidup, tips produktivitas, teknologi, hitung matematika, sampai sekadar ngobrol bebas pas butuh teman diskusi. Dan kalau nanti kamu punya file modul pelajaran (.txt / .pdf), kamu juga bisa mengunggahnya kapan saja di sidebar kiri agar kita bisa bedah bab resminya bareng!\n\nApa nih hal seru yang lagi pengen kamu obrolin hari ini?',
+        source: null,
+        timestamp: new Date()
+      });
     } else {
       const curMod = aiEngine.getModule(state.activeModuleId);
-      const modName = curMod ? curMod.shortName : 'modul';
-      addMessage('ai', `Hai! Aku **Boni**, siap nemenin kamu belajar **${modName}**. Tanyain konsep apa pun yang bikin penasaran, atau klik tombol **Rangkum** kalau mau intisari babnya ya! 🚀`);
-      
-      if (state.activeModuleId === 'modul_02') {
-        addMessage('user', 'Jelaskan fungsi asam klorida (HCl) dan pepsin dalam sistem pencernaan!');
-        addMessage('ai', 'Nah, di dalam lambung kita itu ada cairan super tangguh namanya **asam klorida (HCl)**. Cairan ini dihasilkan oleh sel parietal di dinding lambung.\n\nKenapa tubuh butuh HCl? Nih ada 3 tugas pentingnya:\n1. 🛡️ **Pelindung dari kuman**: Suasana lambung dibuat sangat asam (pH 1,5–2) supaya bakteri jahat di makanan langsung musnah.\n2. ⚡ **Membangunkan enzim**: Enzim pemotong protein asalnya masih "tidur" dalam bentuk *pepsinogen*. Nah, asam HCl inilah tombol "ON" yang mengubahnya jadi **pepsin** aktif!\n3. 🥩 **Melunakkan makanan**: Asam ini mengurai struktur protein agar enzim lebih mudah mencernanya.\n\nSetelah aktif, si **pepsin** langsung bekerja memecah protein kompleks jadi pepton (polipeptida sederhana) lewat hidrolisis ikatan peptida.\n\nKeren kan mekanisme tubuh kita? Mau lanjut bahas enzim lambung lainnya seperti renin?', 'Sumber: Modul_02_Biologi... - Bab 3, Hal. 14');
-        chatInputEl.value = 'Apa itu renin dan apa bedanya dengan pepsin?';
-      }
-      if (curMod) {
-        renderQuickChips(curMod);
-      }
+      const modName = curMod ? (curMod.fullName || curMod.shortName) : 'modul ini';
+      state.conversations[threadKey].push({
+        sender: 'ai',
+        text: `Hai! Aku **Boni**, siap nemenin kamu belajar **${modName}**. Tanyain konsep apa pun yang bikin penasaran, minta dijelaskan dengan analogi atau bahasa lebih sederhana, minta rangkuman, kuis, atau latihan flashcard ya! 🚀`,
+        source: null,
+        timestamp: new Date()
+      });
     }
   }
 
+  function getCurrentMessages() {
+    const key = getCurrentThreadKey();
+    if (!state.conversations[key] || state.conversations[key].length === 0) {
+      initThreadWelcome(key);
+    }
+    return state.conversations[key];
+  }
+
+  function renderCurrentThread() {
+    chatMessagesEl.innerHTML = '';
+    const messages = getCurrentMessages();
+    messages.forEach(msg => {
+      renderSingleMessage(msg);
+    });
+
+    const curMod = state.activeModuleId ? aiEngine.getModule(state.activeModuleId) : null;
+    if (curMod) {
+      renderQuickChips(curMod);
+    } else {
+      renderQuickChips([
+        'Kenapa kopi bikin melek?',
+        'Apa itu filosofi Stoikisme?',
+        'Ceritakan tentang luar angkasa',
+        'Tips mengatasi grogi',
+        'Bagaimana cara kerja AI?',
+        'Tips manajemen waktu'
+      ]);
+    }
+    chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
+  }
+
   function addMessage(sender, text, source = null) {
+    const threadKey = getCurrentThreadKey();
+    if (!state.conversations[threadKey]) {
+      state.conversations[threadKey] = [];
+    }
     const msgObj = { sender, text, source, timestamp: new Date() };
-    state.chatHistory.push(msgObj);
+    state.conversations[threadKey].push(msgObj);
     renderSingleMessage(msgObj);
     chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
   }
@@ -424,7 +495,7 @@ document.addEventListener('DOMContentLoaded', () => {
     chatMessagesEl.appendChild(row);
   }
 
-  function sendMessage() {
+  async function sendMessage() {
     const text = chatInputEl.value.trim();
     if (!text) return;
 
@@ -433,34 +504,38 @@ document.addEventListener('DOMContentLoaded', () => {
 
     showTypingIndicator();
 
-    setTimeout(() => {
-      try {
-        removeTypingIndicator();
-        const response = aiEngine.generateAnswer(text, state.activeModuleId);
-        if (response && response.text) {
-          addMessage('ai', response.text, response.source);
-        } else {
-          addMessage('ai', 'Pertanyaanmu menarik banget! Coba ceritakan lebih spesifik bagian mana yang ingin kita pelajari bareng ya kawan! 😊');
-        }
+    try {
+      const currentList = getCurrentMessages();
+      // Ambil riwayat percakapan sebelumnya (tidak termasuk pesan user terakhir yang baru ditambahkan)
+      const prevHistory = currentList.length > 1 ? currentList.slice(0, -1) : [];
 
-        if (response && response.suggestions && response.suggestions.length > 0) {
-          renderQuickChips(response.suggestions);
-        }
+      const response = await aiEngine.generateAnswer(text, state.activeModuleId, prevHistory, state.aiSettings);
+      
+      removeTypingIndicator();
 
-        if (response && response.action === 'switch_to_quiz') {
-          const actionBtn = document.createElement('button');
-          actionBtn.className = 'inline-action-btn';
-          actionBtn.innerHTML = '⚡ Buka Generator Kuis Sekarang';
-          actionBtn.addEventListener('click', () => switchTab('quiz'));
-          chatMessagesEl.appendChild(actionBtn);
-          chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
-        }
-      } catch (err) {
-        console.error('Error handling chat response:', err);
-        removeTypingIndicator();
-        addMessage('ai', 'Wah, sempat ada sedikit kendala memproses pesanmu, tapi tenang aku sudah di sini lagi! Boleh coba tanyakan sekali lagi kawan? Aku siap bantu jawab! 😊');
+      if (response && response.text) {
+        addMessage('ai', response.text, response.source);
+      } else {
+        addMessage('ai', 'Pertanyaanmu menarik banget! Coba ceritakan lebih spesifik bagian mana yang ingin kita pelajari bareng ya kawan! 😊');
       }
-    }, 320);
+
+      if (response && response.suggestions && response.suggestions.length > 0) {
+        renderQuickChips(response.suggestions);
+      }
+
+      if (response && response.action === 'switch_to_quiz') {
+        const actionBtn = document.createElement('button');
+        actionBtn.className = 'inline-action-btn';
+        actionBtn.innerHTML = '⚡ Buka Generator Kuis Sekarang';
+        actionBtn.addEventListener('click', () => switchTab('quiz'));
+        chatMessagesEl.appendChild(actionBtn);
+        chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
+      }
+    } catch (err) {
+      console.error('Error handling chat response:', err);
+      removeTypingIndicator();
+      addMessage('ai', 'Wah, sempat ada sedikit kendala memproses pesanmu, tapi tenang aku sudah di sini lagi! Boleh coba tanyakan sekali lagi kawan? Aku siap bantu jawab! 😊');
+    }
   }
 
   function showTypingIndicator() {
@@ -468,9 +543,9 @@ document.addEventListener('DOMContentLoaded', () => {
     typing.id = 'typingIndicator';
     typing.className = 'chat-message-row ai-row';
     typing.innerHTML = `
-      <div class="ai-avatar" title="Boni • Sedang mengetik...">🤖</div>
+      <div class="ai-avatar" title="Boni • Sedang berpikir...">🤖</div>
       <div class="ai-bubble-container">
-        <div class="ai-sender-name">Boni • Sedang mengetik...</div>
+        <div class="ai-sender-name">Boni • Sedang berpikir...</div>
         <div class="ai-bubble typing-bubble">
           <span class="dot"></span><span class="dot"></span><span class="dot"></span>
         </div>
@@ -493,6 +568,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // Tombol Chat Baru (Reset hanya thread percakapan aktif)
+  const btnNewChat = document.getElementById('btnNewChat');
+  if (btnNewChat) {
+    btnNewChat.addEventListener('click', () => {
+      const threadKey = getCurrentThreadKey();
+      state.conversations[threadKey] = [];
+      initThreadWelcome(threadKey);
+      renderCurrentThread();
+      showStatusNotification('Obrolan baru dimulai untuk topik ini ✨');
+    });
+  }
+
   btnRangkum.addEventListener('click', () => {
     if (state.modules.length === 0) {
       showStatusNotification('Silakan upload atau muat modul materi terlebih dahulu!');
@@ -500,6 +587,10 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
     const curMod = aiEngine.getModule(state.activeModuleId);
+    if (!curMod) {
+      showStatusNotification('Silakan pilih salah satu modul di sidebar terlebih dahulu!');
+      return;
+    }
     addMessage('user', `Rangkum ${curMod.fullName}`);
     showTypingIndicator();
     setTimeout(() => {
@@ -943,7 +1034,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   btnNewQuizConfig.addEventListener('click', () => {
-    quizSettingsDrawer.classList.remove('hidden');
+    openQuizSettingsModal();
     quizPlayCard.classList.remove('hidden');
     quizResultCard.classList.add('hidden');
   });
@@ -958,9 +1049,141 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ==========================================
+  // 6. PENGATURAN MODEL AI (OFFLINE / GEMINI / OLLAMA / OPENAI)
+  // ==========================================
+
+  function initModelSettingsUI() {
+    const btnOpenModelSettings = document.getElementById('btnOpenModelSettings');
+    const modelSettingsOverlay = document.getElementById('modelSettingsOverlay');
+    const btnCloseModelSettings = document.getElementById('btnCloseModelSettings');
+    const btnCancelModelSettings = document.getElementById('btnCancelModelSettings');
+    const btnSaveModelSettings = document.getElementById('btnSaveModelSettings');
+    const providerSelector = document.getElementById('providerSelector');
+    const modelStatusDot = document.getElementById('modelStatusDot');
+    const currentModelLabel = document.getElementById('currentModelLabel');
+
+    const offlinePanel = document.getElementById('offlineSettingsPanel');
+    const geminiPanel = document.getElementById('geminiSettingsPanel');
+    const ollamaPanel = document.getElementById('ollamaSettingsPanel');
+    const openaiPanel = document.getElementById('openaiSettingsPanel');
+
+    const geminiApiKeyInput = document.getElementById('geminiApiKeyInput');
+    const geminiModelSelect = document.getElementById('geminiModelSelect');
+    const ollamaUrlInput = document.getElementById('ollamaUrlInput');
+    const ollamaModelInput = document.getElementById('ollamaModelInput');
+    const openaiUrlInput = document.getElementById('openaiUrlInput');
+    const openaiApiKeyInput = document.getElementById('openaiApiKeyInput');
+    const openaiModelInput = document.getElementById('openaiModelInput');
+
+    function updateBadge() {
+      if (!currentModelLabel) return;
+      const p = state.aiSettings.provider || 'offline';
+      if (p === 'gemini') {
+        currentModelLabel.textContent = `Gemini (${state.aiSettings.geminiModel || '2.0-flash'})`;
+        if (modelStatusDot) modelStatusDot.className = 'model-status-dot online';
+      } else if (p === 'ollama') {
+        currentModelLabel.textContent = `Ollama (${state.aiSettings.ollamaModel || 'LLM'})`;
+        if (modelStatusDot) modelStatusDot.className = 'model-status-dot online';
+      } else if (p === 'openai') {
+        currentModelLabel.textContent = `API (${state.aiSettings.openaiModel || 'GPT'})`;
+        if (modelStatusDot) modelStatusDot.className = 'model-status-dot online';
+      } else {
+        currentModelLabel.textContent = 'Boni Offline AI';
+        if (modelStatusDot) modelStatusDot.className = 'model-status-dot online';
+      }
+    }
+
+    function showActivePanel(prov) {
+      if (offlinePanel) offlinePanel.classList.toggle('hidden', prov !== 'offline');
+      if (geminiPanel) geminiPanel.classList.toggle('hidden', prov !== 'gemini');
+      if (ollamaPanel) ollamaPanel.classList.toggle('hidden', prov !== 'ollama');
+      if (openaiPanel) openaiPanel.classList.toggle('hidden', prov !== 'openai');
+    }
+
+    function syncFormFromState() {
+      const p = state.aiSettings.provider || 'offline';
+      if (providerSelector) {
+        providerSelector.querySelectorAll('.pill-btn').forEach(btn => {
+          btn.classList.toggle('active', btn.getAttribute('data-provider') === p);
+        });
+      }
+
+      showActivePanel(p);
+
+      if (geminiApiKeyInput) geminiApiKeyInput.value = state.aiSettings.geminiApiKey || state.aiSettings.geminiKey || '';
+      if (geminiModelSelect) geminiModelSelect.value = state.aiSettings.geminiModel || 'gemini-2.0-flash';
+      if (ollamaUrlInput) ollamaUrlInput.value = state.aiSettings.ollamaUrl || 'http://localhost:11434';
+      if (ollamaModelInput) ollamaModelInput.value = state.aiSettings.ollamaModel || 'llama3';
+      if (openaiUrlInput) openaiUrlInput.value = state.aiSettings.openaiUrl || 'https://api.openai.com/v1';
+      if (openaiApiKeyInput) openaiApiKeyInput.value = state.aiSettings.openaiApiKey || state.aiSettings.openaiKey || '';
+      if (openaiModelInput) openaiModelInput.value = state.aiSettings.openaiModel || 'gpt-4o-mini';
+    }
+
+    if (providerSelector) {
+      providerSelector.querySelectorAll('.pill-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const prov = btn.getAttribute('data-provider');
+          providerSelector.querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          showActivePanel(prov);
+        });
+      });
+    }
+
+    if (btnOpenModelSettings && modelSettingsOverlay) {
+      btnOpenModelSettings.addEventListener('click', () => {
+        syncFormFromState();
+        modelSettingsOverlay.classList.remove('hidden');
+        modelSettingsOverlay.style.display = 'flex';
+      });
+    }
+
+    function closeModal() {
+      if (modelSettingsOverlay) {
+        modelSettingsOverlay.classList.add('hidden');
+        modelSettingsOverlay.style.display = 'none';
+      }
+    }
+
+    if (btnCloseModelSettings) btnCloseModelSettings.addEventListener('click', closeModal);
+    if (btnCancelModelSettings) btnCancelModelSettings.addEventListener('click', closeModal);
+
+    if (btnSaveModelSettings) {
+      btnSaveModelSettings.addEventListener('click', () => {
+        const activeBtn = providerSelector ? providerSelector.querySelector('.pill-btn.active') : null;
+        const prov = activeBtn ? activeBtn.getAttribute('data-provider') : 'offline';
+
+        state.aiSettings.provider = prov;
+        const gemKey = geminiApiKeyInput ? geminiApiKeyInput.value.trim() : '';
+        state.aiSettings.geminiKey = gemKey;
+        state.aiSettings.geminiApiKey = gemKey;
+
+        if (geminiModelSelect) state.aiSettings.geminiModel = geminiModelSelect.value;
+        if (ollamaUrlInput) state.aiSettings.ollamaUrl = ollamaUrlInput.value.trim();
+        if (ollamaModelInput) state.aiSettings.ollamaModel = ollamaModelInput.value.trim();
+        if (openaiUrlInput) state.aiSettings.openaiUrl = openaiUrlInput.value.trim();
+
+        const openKey = openaiApiKeyInput ? openaiApiKeyInput.value.trim() : '';
+        state.aiSettings.openaiKey = openKey;
+        state.aiSettings.openaiApiKey = openKey;
+
+        if (openaiModelInput) state.aiSettings.openaiModel = openaiModelInput.value.trim();
+
+        saveAiSettings(state.aiSettings);
+        updateBadge();
+        closeModal();
+        showStatusNotification(`Model AI aktif: ${currentModelLabel ? currentModelLabel.textContent : prov}`);
+      });
+    }
+
+    updateBadge();
+  }
+
+  // ==========================================
   // INISIALISASI AWAL (KOSONG SESUAI PERMINTAAN)
   // ==========================================
   renderModules();
   updateHeaderAndBadges();
-  resetChatMessages();
+  renderCurrentThread();
+  initModelSettingsUI();
 });
