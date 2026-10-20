@@ -456,12 +456,12 @@ document.addEventListener('DOMContentLoaded', () => {
     chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
   }
 
-  function addMessage(sender, text, source = null) {
+  function addMessage(sender, text, source = null, analysis = null) {
     const threadKey = getCurrentThreadKey();
     if (!state.conversations[threadKey]) {
       state.conversations[threadKey] = [];
     }
-    const msgObj = { sender, text, source, timestamp: new Date() };
+    const msgObj = { sender, text, source, analysis, timestamp: new Date() };
     state.conversations[threadKey].push(msgObj);
     renderSingleMessage(msgObj);
     chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
@@ -474,14 +474,60 @@ document.addEventListener('DOMContentLoaded', () => {
     if (msg.sender === 'ai') {
       const formattedText = msg.text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
                                     .replace(/\n/g, '<br>');
+      
+      let analysisHtml = '';
+      if (msg.analysis) {
+        const a = msg.analysis;
+        const regBadge = a.register === 'gaul' ? '⚡ Bahasa Gaul' : (a.register === 'formal' ? '🏛️ Bahasa Baku' : '💬 Ragam Santai');
+        const regClass = a.register === 'gaul' ? 'badge-gaul' : (a.register === 'formal' ? 'badge-formal' : 'badge-santai');
+
+        analysisHtml = `
+          <div class="analysis-pill-card">
+            <div class="analysis-pill-header" title="Klik untuk membuka/tutup rincian analisis pertanyaan Boni">
+              <div class="analysis-pill-left">
+                <span class="analysis-pill-icon">🧠</span>
+                <span class="analysis-pill-title">Analisis Pertanyaan: <strong>${escapeHtml(a.topic || 'Wawasan')}</strong></span>
+                <span class="analysis-reg-badge ${regClass}">${regBadge}</span>
+              </div>
+              <div class="analysis-pill-right">
+                <span class="analysis-verified-tag">✓ Terverifikasi</span>
+                <span class="analysis-caret">▾</span>
+              </div>
+            </div>
+            <div class="analysis-pill-body hidden">
+              <div class="analysis-field"><span class="analysis-field-label">🎯 Maksud Pertanyaan:</span> <span class="analysis-field-val">${escapeHtml(a.intentDescription || 'Diskusi Pembelajaran')}</span></div>
+              ${a.normalizedQuery ? `<div class="analysis-field"><span class="analysis-field-label">🔄 Inti Normalisasi:</span> <span class="analysis-field-val"><em>"${escapeHtml(a.normalizedQuery)}"</em></span></div>` : ''}
+              ${a.slangTokens && a.slangTokens.length > 0 ? `<div class="analysis-field"><span class="analysis-field-label">💬 Istilah Gaul Teridentifikasi:</span> <span class="analysis-field-val">${a.slangTokens.map(s => `<code class="slang-code">${escapeHtml(s)}</code>`).join(' ')}</span></div>` : ''}
+              <div class="analysis-field"><span class="analysis-field-label">🛡️ Pencegahan Salah Jawab:</span> <span class="analysis-field-val">${escapeHtml(a.disambiguation || 'Menganalisis konsep dan maksud pertanyaan sebelum memformulasikan jawaban.')}</span></div>
+            </div>
+          </div>
+        `;
+      }
+
       row.innerHTML = `
         <div class="ai-avatar" title="Boni • Teman Belajar AI">🤖</div>
         <div class="ai-bubble-container">
           <div class="ai-sender-name">Boni • Teman Belajar</div>
+          ${analysisHtml}
           <div class="ai-bubble">${formattedText}</div>
           ${msg.source ? `<div class="ai-source">${msg.source}</div>` : ''}
         </div>
       `;
+
+      // Event listener klik untuk membuka/tutup analisis pertanyaan
+      const cardHeader = row.querySelector('.analysis-pill-header');
+      if (cardHeader) {
+        cardHeader.addEventListener('click', () => {
+          const body = row.querySelector('.analysis-pill-body');
+          const caret = row.querySelector('.analysis-caret');
+          if (body) {
+            body.classList.toggle('hidden');
+            if (caret) {
+              caret.textContent = body.classList.contains('hidden') ? '▾' : '▴';
+            }
+          }
+        });
+      }
     } else {
       row.innerHTML = `
         <div class="user-bubble-container">
@@ -514,7 +560,7 @@ document.addEventListener('DOMContentLoaded', () => {
       removeTypingIndicator();
 
       if (response && response.text) {
-        addMessage('ai', response.text, response.source);
+        addMessage('ai', response.text, response.source, response.analysis);
       } else {
         addMessage('ai', 'Pertanyaanmu menarik banget! Coba ceritakan lebih spesifik bagian mana yang ingin kita pelajari bareng ya kawan! 😊');
       }

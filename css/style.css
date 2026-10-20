@@ -1435,3 +1435,151 @@ body {
   color: #134e4a;
 }
 
+/* ==========================================
+   QUESTION ANALYSIS (ANALISIS PERTANYAAN AI)
+   ========================================== */
+.analysis-pill-card {
+  background: #ffffff;
+  border: 1px solid #99f6e4;
+  border-radius: 10px;
+  margin-bottom: 6px;
+  box-shadow: 0 2px 5px rgba(13, 148, 136, 0.06);
+  overflow: hidden;
+  font-size: 12.5px;
+  transition: all 0.2s ease;
+}
+
+.analysis-pill-card:hover {
+  border-color: #5eead4;
+  box-shadow: 0 3px 8px rgba(13, 148, 136, 0.1);
+}
+
+.analysis-pill-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 12px;
+  background: linear-gradient(135deg, #f0fdfa 0%, #e6fffa 100%);
+  cursor: pointer;
+  user-select: none;
+  border-bottom: 1px solid transparent;
+  transition: background 0.15s ease;
+}
+
+.analysis-pill-header:hover {
+  background: linear-gradient(135deg, #e6fffa 0%, #ccfbf1 100%);
+}
+
+.analysis-pill-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.analysis-pill-icon {
+  font-size: 14px;
+}
+
+.analysis-pill-title {
+  color: #0f766e;
+  font-weight: 500;
+  font-size: 12px;
+}
+
+.analysis-pill-title strong {
+  font-weight: 700;
+  color: #115e59;
+}
+
+.analysis-reg-badge {
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.badge-gaul {
+  background: #fef3c7;
+  color: #b45309;
+  border: 1px solid #fde68a;
+}
+
+.badge-formal {
+  background: #e0e7ff;
+  color: #3730a3;
+  border: 1px solid #c7d2fe;
+}
+
+.badge-santai {
+  background: #ccfbf1;
+  color: #0f766e;
+  border: 1px solid #99f6e4;
+}
+
+.analysis-pill-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.analysis-verified-tag {
+  font-size: 11px;
+  font-weight: 600;
+  color: #059669;
+  background: #ecfdf5;
+  padding: 2px 6px;
+  border-radius: 6px;
+  border: 1px solid #a7f3d0;
+}
+
+.analysis-caret {
+  color: #0f766e;
+  font-size: 11px;
+  transition: transform 0.2s ease;
+}
+
+.analysis-pill-body {
+  padding: 10px 14px;
+  background: #fafdfc;
+  border-top: 1px solid #e6fffa;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #334155;
+}
+
+.analysis-field {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.analysis-field-label {
+  font-weight: 700;
+  color: #0f766e;
+  flex-shrink: 0;
+  min-width: 140px;
+}
+
+.analysis-field-val {
+  color: #1e293b;
+  flex: 1;
+}
+
+.slang-code {
+  background: #fef3c7;
+  color: #92400e;
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  border: 1px solid #fde68a;
+  margin-right: 3px;
+}
+

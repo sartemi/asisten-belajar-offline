@@ -293,6 +293,93 @@ async function runTests() {
     'Murni mengobrol luwes layaknya teman sejati'
   );
 
+  // Skenario 14: Pemahaman Bahasa Formal & Bahasa Gaul Serta Analisis Pertanyaan Sebelum Menjawab
+  console.log('\n--- Skenario 14: Pemahaman Bahasa Formal, Gaul, & Pre-Answering Question Analysis ---');
+
+  // 14.1 Pertanyaan bahasa gaul kausal lambung
+  const qSlangStomach = 'knp sih lambung kaga kebakar kena hcl padahal asem bgt?';
+  const resSlangStomach = await engine.generateAnswer(qSlangStomach, bioModId, [], { provider: 'offline' });
+  assert(
+    resSlangStomach.analysis && resSlangStomach.analysis.register === 'gaul',
+    'Analisis pertanyaan mendeteksi register "gaul" secara akurat',
+    `Register: ${resSlangStomach.analysis && resSlangStomach.analysis.register}`
+  );
+  assert(
+    resSlangStomach.analysis && resSlangStomach.analysis.slangTokens && resSlangStomach.analysis.slangTokens.length > 0,
+    'Sistem mengekstraksi dan menormalisasi token bahasa gaul (knp, kaga, asem, bgt)',
+    `Slang detected: ${JSON.stringify(resSlangStomach.analysis && resSlangStomach.analysis.slangTokens)}`
+  );
+  assert(
+    resSlangStomach.text.includes('Mukus') || resSlangStomach.text.includes('bikarbonat') || resSlangStomach.text.includes('Gastric Mucosal Barrier'),
+    'Respon menjawab esensi mekanisme perlindungan mukosa lambung meski ditanya dengan bahasa gaul kental',
+    `Snippet: ${resSlangStomach.text.slice(0, 150)}...`
+  );
+
+  // 14.2 Pertanyaan bahasa gaul perbandingan ("spill dong bedanya pepsin ama renin apaan dah")
+  const qSlangDiff = 'eh bro spill dong bedanya pepsin ama renin apaan dah';
+  const resSlangDiff = await engine.generateAnswer(qSlangDiff, bioModId, [], { provider: 'offline' });
+  assert(
+    resSlangDiff.analysis && resSlangDiff.analysis.intent === 'DIFFERENCE',
+    'Sistem menganalisis intent perbandingan (DIFFERENCE) dari frasa gaul "spill dong bedanya ... apaan dah"',
+    `Intent: ${resSlangDiff.analysis && resSlangDiff.analysis.intent}`
+  );
+  assert(
+    resSlangDiff.text.includes('Pepsin') && resSlangDiff.text.includes('Renin'),
+    'Jawaban komparasi Pepsin vs Renin akurat dan tidak salah sasaran',
+    `Snippet: ${resSlangDiff.text.slice(0, 150)}...`
+  );
+
+  // 14.3 Permintaan penyederhanaan dengan bahasa gaul ("gw puyeng bgt nih, jelasin yg simpel aja napah")
+  const historyPuyeng = [
+    { sender: 'user', text: 'Jelaskan asam klorida dan pepsin' },
+    { sender: 'ai', text: 'Asam klorida memicu pepsinogen menjadi pepsin...' }
+  ];
+  const qSlangSimple = 'gw puyeng bgt nih, jelasin yg simpel aja napah';
+  const resSlangSimple = await engine.generateAnswer(qSlangSimple, bioModId, historyPuyeng, { provider: 'offline' });
+  assert(
+    resSlangSimple.analysis && resSlangSimple.analysis.intent === 'SIMPLIFY',
+    'Sistem menganalisis intent penyederhanaan (SIMPLIFY) dari bahasa gaul "gw puyeng bgt nih, jelasin yg simpel aja napah"',
+    `Intent: ${resSlangSimple.analysis && resSlangSimple.analysis.intent}`
+  );
+  assert(
+    resSlangSimple.text.includes('Sederhana') || resSlangSimple.text.includes('Inti Simpel') || resSlangSimple.text.includes('analog'),
+    'Respon memberikan penjelasan sederhana (Feynman style)',
+    `Snippet: ${resSlangSimple.text.slice(0, 150)}...`
+  );
+
+  // 14.4 Pertanyaan bahasa formal baku
+  const qFormal = 'Bagaimanakah mekanisme perlindungan mukosa lambung terhadap asam klorida dan pepsin?';
+  const resFormal = await engine.generateAnswer(qFormal, bioModId, [], { provider: 'offline' });
+  assert(
+    resFormal.analysis && resFormal.analysis.register === 'formal',
+    'Analisis pertanyaan mendeteksi register "formal" untuk kalimat baku',
+    `Register: ${resFormal.analysis && resFormal.analysis.register}`
+  );
+  assert(
+    resFormal.text.includes('Mukus') || resFormal.text.includes('bikarbonat') || resFormal.text.includes('epitel'),
+    'Respon formal menjawab mekanisme mukosa lambung secara ilmiah dan terstruktur',
+    `Snippet: ${resFormal.text.slice(0, 150)}...`
+  );
+
+  // 14.5 Zero-module chat dengan bahasa gaul santai
+  const qSlangCoffee = 'lu tau ga knp kopi bikin melek semaleman?';
+  const resSlangCoffee = await emptyEngine.generateAnswer(qSlangCoffee, null, [], { provider: 'offline' });
+  assert(
+    (resSlangCoffee.text.includes('adenosin') || resSlangCoffee.text.includes('kafein')) && resSlangCoffee.analysis && resSlangCoffee.analysis.register === 'gaul',
+    'Chatbot memahami pertanyaan sains kopi dalam bahasa gaul tanpa modul dan tanpa gagal tangkap',
+    `Snippet: ${resSlangCoffee.text.slice(0, 150)}...`
+  );
+
+  // 14.6 Keutuhan Metadata Pre-Answering Analysis
+  assert(
+    resSlangStomach.analysis &&
+    resSlangStomach.analysis.normalizedQuery &&
+    resSlangStomach.analysis.disambiguation &&
+    resSlangStomach.analysis.confidence >= 0.7,
+    'Objek analisis pertanyaan memuat normalizedQuery, disambiguation, dan confidence score yang valid',
+    `Disambiguation note: ${resSlangStomach.analysis && resSlangStomach.analysis.disambiguation}`
+  );
+
   console.log('\n================================================================');
   console.log(`🎯 HASIL AKHIR PENGUJIAN: ${passedCount} / ${totalTests} SKENARIO BERHASIL`);
   console.log('================================================================\n');

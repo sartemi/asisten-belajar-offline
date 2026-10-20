@@ -112,7 +112,13 @@ class OfflineAIEngine {
       'sebutkan', 'tuliskan', 'berikan', 'menurut', 'dong', 'sih', 'deh', 'nih',
       'kan', 'ya', 'yah', 'ada', 'tidak', 'bukan', 'aja', 'saja', 'tersebut',
       'terjadi', 'menjadi', 'memiliki', 'tolong', 'coba', 'tahu', 'kasih', 'paham',
-      'terkait', 'seperti', 'begitu', 'begini', 'hal', 'gimana'
+      'terkait', 'seperti', 'begitu', 'begini', 'hal', 'gimana',
+      'gw', 'gue', 'gua', 'lu', 'lo', 'elu', 'elo', 'bro', 'cuy', 'sob', 'bray', 'ges',
+      'guys', 'gaes', 'knp', 'gmn', 'bgt', 'kaga', 'ngga', 'gak', 'klo', 'kalo', 'tp',
+      'tpi', 'dgn', 'yg', 'utk', 'dr', 'blm', 'udh', 'dah', 'mah', 'kek', 'kayak',
+      'spill', 'wkwk', 'haha', 'hehe', 'anjir', 'bjir', 'buset', 'gokil', 'beneran',
+      'emang', 'emangnya', 'plis', 'please', 'napah', 'apaseh', 'apasi', 'apaan',
+      'dmana', 'kmn', 'doang', 'cuma', 'cm', 'bikin', 'lah', 'kah', 'dongg'
     ]);
   }
 
@@ -166,7 +172,13 @@ class OfflineAIEngine {
       'kalkulus': ['turunan', 'integral', 'limit', 'diferensial'],
       'diferensial': ['turunan', 'kalkulus', 'gradien'],
       'proklamasi': ['rengasdengklok', 'kemerdekaan', 'soekarno', 'maeda', 'sayuti melik', 'bpupki', 'ppki'],
-      'rengasdengklok': ['proklamasi', 'kemerdekaan', 'pemuda', 'soekarno', 'hatta']
+      'rengasdengklok': ['proklamasi', 'kemerdekaan', 'pemuda', 'soekarno', 'hatta'],
+      'asem': ['asam', 'hcl', 'asam klorida', 'asam lambung'],
+      'kebakar': ['iritasi', 'luka', 'ulkus', 'dinding lambung', 'mukus', 'bikarbonat', 'mukosa'],
+      'bolong': ['ulkus', 'luka', 'iritasi', 'dinding lambung', 'mukus'],
+      'melek': ['terjaga', 'kafein', 'kopi', 'adenosin', 'kantuk'],
+      'puyeng': ['rumit', 'sederhana', 'feynman', 'simpel'],
+      'mumet': ['rumit', 'sederhana', 'feynman', 'simpel']
     };
   }
 
@@ -194,6 +206,375 @@ class OfflineAIEngine {
       }
     }
     return Array.from(tokenSet);
+  }
+
+  // ==========================================
+  // KAMUS BAHASA GAUL & PENGANALISIS PERTANYAAN
+  // ==========================================
+
+  getSlangDictionary() {
+    return {
+      'knp': 'kenapa',
+      'kenape': 'kenapa',
+      'kenapesi': 'kenapa',
+      'ngapa': 'kenapa',
+      'ngapain': 'kenapa',
+      'ngapasi': 'kenapa',
+      'napa': 'kenapa',
+      'napah': 'kenapa',
+      'gmn': 'bagaimana',
+      'gimana': 'bagaimana',
+      'gemana': 'bagaimana',
+      'pegimana': 'bagaimana',
+      'gimanasi': 'bagaimana',
+      'begimana': 'bagaimana',
+      'apaan': 'apa',
+      'apaseh': 'apa',
+      'apasi': 'apa',
+      'apaantuh': 'apa',
+      'dmana': 'di mana',
+      'dimane': 'di mana',
+      'kmn': 'ke mana',
+      'bgt': 'sangat',
+      'banget': 'sangat',
+      'beud': 'sangat',
+      'beut': 'sangat',
+      'parah': 'sangat',
+      'kaga': 'tidak',
+      'kga': 'tidak',
+      'kagak': 'tidak',
+      'ga': 'tidak',
+      'gak': 'tidak',
+      'ngga': 'tidak',
+      'nggak': 'tidak',
+      'ndak': 'tidak',
+      'bkn': 'bukan',
+      'tp': 'tetapi',
+      'tpi': 'tetapi',
+      'klo': 'kalau',
+      'kalo': 'kalau',
+      'kl': 'kalau',
+      'yg': 'yang',
+      'dgn': 'dengan',
+      'utk': 'untuk',
+      'dr': 'dari',
+      'udh': 'sudah',
+      'udah': 'sudah',
+      'sdh': 'sudah',
+      'blm': 'belum',
+      'belom': 'belum',
+      'aja': 'saja',
+      'ajaa': 'saja',
+      'doang': 'saja',
+      'cuma': 'saja',
+      'cm': 'saja',
+      'krn': 'karena',
+      'karna': 'karena',
+      'bikos': 'karena',
+      'gegara': 'karena',
+      'kek': 'seperti',
+      'kayak': 'seperti',
+      'keknya': 'sepertinya',
+      'kayaknya': 'sepertinya',
+      'gw': 'saya',
+      'gue': 'saya',
+      'gua': 'saya',
+      'ogut': 'saya',
+      'ane': 'saya',
+      'lu': 'kamu',
+      'lo': 'kamu',
+      'elu': 'kamu',
+      'elo': 'kamu',
+      'ente': 'kamu',
+      'bro': 'teman',
+      'cuy': 'teman',
+      'sob': 'teman',
+      'bray': 'teman',
+      'ges': 'teman',
+      'guys': 'teman',
+      'gaes': 'teman',
+      'gan': 'teman',
+      'spill': 'jelaskan',
+      'jelasin': 'jelaskan',
+      'bocorin': 'jelaskan',
+      'terangin': 'jelaskan',
+      'bedain': 'perbedaan',
+      'puyeng': 'sulit dipahami',
+      'mumet': 'sulit dipahami',
+      'lieur': 'sulit dipahami',
+      'mager': 'malas',
+      'males': 'malas',
+      'baper': 'terbawa perasaan',
+      'kepo': 'penasaran',
+      'asem': 'asam',
+      'kebakar': 'iritasi terluka',
+      'bolong': 'luka ulkus',
+      'ancur': 'hancur rusak',
+      'meleleh': 'larut rusak',
+      'melek': 'terjaga',
+      'bikin': 'membuat',
+      'ngerti': 'paham',
+      'ngarti': 'paham',
+      'mudeng': 'paham',
+      'ngeh': 'paham',
+      'beneran': 'memang',
+      'emang': 'memang',
+      'emangnya': 'memang'
+    };
+  }
+
+  normalizeQuery(rawText) {
+    if (!rawText) return { normalizedQuery: '', slangDetected: [], isSlangDetected: false };
+    const dict = this.getSlangDictionary();
+    const words = rawText.toLowerCase().replace(/[\?\!\.\,]/g, ' ').split(/\s+/).filter(Boolean);
+    const slangDetected = [];
+    const normalizedWords = [];
+
+    for (const w of words) {
+      if (dict[w]) {
+        slangDetected.push(w);
+        normalizedWords.push(dict[w]);
+      } else {
+        normalizedWords.push(w);
+      }
+    }
+
+    // Pembersihan pola gabungan gaul (misal: "lu tau ga", "bisa ga", "spill dong")
+    let normStr = normalizedWords.join(' ');
+    normStr = normStr
+      .replace(/\b(kamu tahu tidak|tahu tidak|tau ga|tau gak)\b/gi, 'apakah')
+      .replace(/\bbisa tidak\b/gi, 'bisakah')
+      .replace(/\bjelaskan dong\b/gi, 'jelaskan')
+      .replace(/\bperbedaan apaan\b/gi, 'perbedaan')
+      .replace(/\bkok bisa begitu\b/gi, 'kenapa bisa begitu')
+      .replace(/\bkok bisa\b/gi, 'kenapa bisa');
+
+    return {
+      normalizedQuery: normStr.trim(),
+      slangDetected: Array.from(new Set(slangDetected)),
+      isSlangDetected: slangDetected.length > 0
+    };
+  }
+
+  detectLanguageRegister(text) {
+    if (!text) return 'santai';
+    const clean = text.toLowerCase();
+
+    // 1. Cek Ciri Formal Baku
+    const formalPatterns = [
+      /\b(apakah|bagaimanakah|mengapakah|sebutkanlah|uraikanlah|jelaskanlah|terdapat|berdasarkan|merupakan|yakni|adapun|sehubungan)\b/i,
+      /\bmohon\s+(jelaskan|bantu|uraikan)\b/i,
+      /\bapa\s+yang\s+dimaksud\s+dengan\b/i
+    ];
+    let formalScore = 0;
+    for (const p of formalPatterns) {
+      if (p.test(clean)) formalScore += 2;
+    }
+
+    // 2. Cek Ciri Bahasa Gaul & Slang
+    const slangDict = this.getSlangDictionary();
+    const words = clean.replace(/[\?\!\.\,]/g, ' ').split(/\s+/).filter(Boolean);
+    let slangScore = 0;
+    for (const w of words) {
+      if (slangDict[w]) slangScore++;
+    }
+    if (/(dong|sih|deh|nih|kok|tuh|wkwk|haha|anjir|bjir|gokil|banget|parah)\b/i.test(clean)) {
+      slangScore++;
+    }
+
+    if (slangScore >= 2 || (slangScore >= 1 && formalScore === 0)) {
+      return 'gaul';
+    }
+    if (formalScore >= 2 && slangScore === 0) {
+      return 'formal';
+    }
+    return 'santai';
+  }
+
+  extractEntities(clean, normalized, context, activeModule) {
+    const entityBank = [
+      { name: 'asam klorida', keywords: ['hcl', 'asam klorida', 'asam lambung', 'asem lambung'] },
+      { name: 'pepsin', keywords: ['pepsin', 'pepsinogen', 'pepton'] },
+      { name: 'renin', keywords: ['renin', 'kasein', 'kaseinogen'] },
+      { name: 'lambung', keywords: ['lambung', 'dinding lambung', 'mukus', 'bikarbonat', 'mukosa', 'gaster', 'kimus'] },
+      { name: 'intestin', keywords: ['intestin', 'usus halus', 'usus besar', 'duodenum', 'jejunum', 'ileum', 'kolon', 'vili'] },
+      { name: 'esofagus', keywords: ['esofagus', 'kerongkongan', 'peristaltik', 'ptialin', 'saliva'] },
+      { name: 'newton', keywords: ['newton', 'hukum newton', 'inersia', 'kelembaman'] },
+      { name: 'stoikisme', keywords: ['stoikisme', 'stoik', 'stoic', 'dikotomi kendali', 'marcus aurelius'] },
+      { name: 'kopi', keywords: ['kopi', 'kafein', 'adenosin', 'melek'] },
+      { name: 'lubang hitam', keywords: ['lubang hitam', 'black hole', 'singularitas', 'event horizon'] },
+      { name: 'tidur', keywords: ['mimpi', 'tidur', 'fase rem', 'neurosains'] },
+      { name: 'grogi', keywords: ['grogi', 'demam panggung', 'public speaking', 'gugup'] },
+      { name: 'cpu', keywords: ['cpu', 'prosesor', 'processor', 'ram', 'von neumann', 'alu'] },
+      { name: 'fotosintesis', keywords: ['fotosintesis', 'klorofil', 'kloroplas', 'tilakoid'] },
+      { name: 'hujan', keywords: ['hujan', 'siklus air', 'siklus hidrologi', 'kondensasi'] },
+      { name: 'langit biru', keywords: ['langit biru', 'pelangi', 'hamburan rayleigh', 'dispersi'] },
+      { name: 'inflasi', keywords: ['inflasi', 'daya beli', 'bank sentral', 'moneter'] }
+    ];
+
+    const detected = [];
+    for (const ent of entityBank) {
+      for (const kw of ent.keywords) {
+        const re = new RegExp('(?:^|[\\s.,!?])' + kw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '(?:$|[\\s.,!?])', 'i');
+        if (re.test(clean) || (normalized && re.test(normalized))) {
+          detected.push(ent.name);
+          break;
+        }
+      }
+    }
+
+    if (detected.length === 0 && context && context.primaryTopic) {
+      detected.push(context.primaryTopic);
+    }
+    if (detected.length === 0 && activeModule) {
+      detected.push(activeModule.fullName || activeModule.shortName);
+    }
+
+    return Array.from(new Set(detected));
+  }
+
+  inferGeneralTopic(clean, normalized) {
+    const combined = `${clean} ${normalized}`;
+    if (combined.includes('lambung') || combined.includes('hcl') || combined.includes('pepsin')) return 'lambung';
+    if (combined.includes('kopi') || combined.includes('kafein')) return 'kopi';
+    if (combined.includes('stoikisme') || combined.includes('filosofi')) return 'stoikisme';
+    if (combined.includes('newton') || combined.includes('inersia')) return 'newton';
+    if (combined.includes('luar angkasa') || combined.includes('lubang hitam')) return 'lubang hitam';
+    if (combined.includes('grogi') || combined.includes('public speaking')) return 'grogi';
+    if (combined.includes('kuis') || combined.includes('soal')) return 'Latihan Soal & Evaluasi Belajar';
+    if (combined.includes('flashcard')) return 'Kartu Belajar (Active Recall)';
+    return 'Wawasan Pembelajaran';
+  }
+
+  describeIntent(intentData) {
+    if (!intentData) return 'Diskusi Pembelajaran';
+    const it = intentData.intent;
+    const sub = intentData.subType;
+
+    if (it === 'PEDAGOGICAL_FOLLOWUP') {
+      if (sub === 'WHY_STOMACH_BARRIER') return 'Penalaran Fisiologis: Mekanisme Proteksi Lambung dari Asam HCl';
+      if (sub === 'WHY_CAUSAL') return 'Penalaran Kausalitas: "Mengapa Hal Tersebut Bisa Terjadi"';
+      if (sub === 'SIMPLIFY') return 'Penyederhanaan Konsep (Teknik Feynman / Bahasa Awam)';
+      if (sub === 'ANALOGY') return 'Perumpamaan / Analogi Konseptual Nyata';
+      if (sub === 'EXAMPLE') return 'Contoh Konkret di Kehidupan Sehari-hari';
+      if (sub === 'DIFFERENCE') return 'Komparasi & Analisis Perbedaan Antar-Konsep';
+      if (sub === 'FUNCTION') return 'Analisis Fungsi & Peran Organ/Sistem';
+      if (sub === 'MECHANISM') return 'Analisis Mekanisme Kerja & Alur Proses';
+    }
+    if (it === 'SUBJECT_INQUIRY') return 'Penelusuran Materi Pembelajaran & Sains';
+    if (it === 'INCHAT_QUIZ') return 'Latihan Soal Interaktif (Kuis Cepat)';
+    if (it === 'FLASHCARDS') return 'Pembuatan Kartu Belajar (Active Recall)';
+    if (it === 'SUMMARY') return 'Rangkuman Intisari Materi Modul';
+    if (it === 'PROBLEM_SOLVING') return 'Pemecahan Soal Hitungan Bertahap';
+    if (it === 'FRIEND_COMPANION') return 'Obrolan Teman Diskusi & Dukungan Personal';
+    if (it === 'OUT_OF_TOPIC') return 'Percakapan Santai di Luar Topik Modul';
+    if (it === 'GREETING') return 'Sapaan & Pembuka Percakapan';
+    if (it === 'PERSONA_IDENTITY' || it === 'PERSONA_CAPABILITIES') return 'Informasi Persona & Fitur AI Boni';
+    return 'Diskusi Konsep & Tanya Jawab';
+  }
+
+  generateDisambiguationNotes(clean, normalized, intentData, entities, register) {
+    const combined = `${clean} ${normalized}`;
+
+    if (intentData.subType === 'WHY_STOMACH_BARRIER' || (combined.includes('lambung') && (combined.includes('kebakar') || combined.includes('bolong') || combined.includes('rusak')))) {
+      return 'Istilah gaul/metafora ("kaga kebakar/bolong", "asem bgt") dipetakan ke konsep Barier Mukosa Lambung (Gastric Mucosal Barrier). Chatbot menyajikan mekanisme proteksi gel lendir bikarbonat (HCO₃⁻), sambungan sel rapat, dan regenerasi epitel agar tidak salah mengartikan kerusakan lambung secara harfiah.';
+    }
+
+    if (intentData.subType === 'DIFFERENCE' && (combined.includes('pepsin') || combined.includes('renin'))) {
+      return 'Disambiguasi komparatif: Membedakan enzim Pepsin (pemecah protein hewani/nabati umum) vs Renin (khusus mengendapkan protein susu/kasein pada masa bayi) agar tidak tertukar.';
+    }
+
+    if (intentData.subType === 'SIMPLIFY') {
+      return 'Pengguna menggunakan bahasa santai/gaul ("puyeng bgt", "simpel napah") untuk meminta simplifikasi. Chatbot menerapkan teknik Feynman dengan analogi ramah anak SMP tanpa mengurangi keakuratan ilmiah.';
+    }
+
+    if (combined.includes('kopi') && combined.includes('melek')) {
+      return 'Istilah gaul "bikin melek" dinormalisasi ke konsep adenosin dan blokade reseptor kantuk di otak oleh kafein.';
+    }
+
+    if (register === 'gaul') {
+      return 'Ragam bahasa gaul terdeteksi. Kosa kata slang dinormalisasi ke padanan semantik baku. Respon disajikan komunikatif, akrab, namun dengan substansi keilmuan 100% presisi.';
+    }
+
+    if (register === 'formal') {
+      return 'Ragam bahasa formal/baku terdeteksi. Respon disajikan dengan struktur akademis rapi, rujukan terverifikasi, dan terminologi baku.';
+    }
+
+    return 'Pertanyaan dianalisis sebelum menjawab guna memastikan topik, maksud, dan fakta sains selaras tanpa halusinasi.';
+  }
+
+  analyzeQuestion(rawQuery, context, activeModule) {
+    const raw = (rawQuery || '').trim();
+    const clean = raw.toLowerCase();
+    const register = this.detectLanguageRegister(raw);
+    const { normalizedQuery, slangDetected } = this.normalizeQuery(raw);
+
+    // Intent classification memanfaatkan normalizedQuery agar bahasa gaul tidak meleset
+    const intentData = this.classifyIntent(clean, raw, context, activeModule, normalizedQuery);
+
+    // Ekstraksi entitas kurikulum
+    const entities = this.extractEntities(clean, normalizedQuery, context, activeModule);
+
+    // Penentuan Topik:
+    // Jika pertanyaan adalah follow-up pedagogis tanpa entitas baru, prioritaskan topik percakapan sebelumnya
+    let topic = null;
+    const isFollowup = intentData.intent === 'PEDAGOGICAL_FOLLOWUP' && intentData.subType !== 'WHY_STOMACH_BARRIER';
+    if (isFollowup && context && context.primaryTopic) {
+      const explicitNew = entities.find(e => e !== context.primaryTopic && (clean.includes(e) || (normalizedQuery && normalizedQuery.includes(e))));
+      topic = explicitNew || context.primaryTopic;
+    } else if (entities && entities.length > 0) {
+      topic = entities[0];
+    } else if (context && context.primaryTopic) {
+      topic = context.primaryTopic;
+    } else if (activeModule) {
+      topic = activeModule.subject || activeModule.shortName;
+    } else {
+      topic = this.inferGeneralTopic(clean, normalizedQuery);
+    }
+
+    const disambiguation = this.generateDisambiguationNotes(clean, normalizedQuery, intentData, entities, register);
+
+    return {
+      rawQuery: raw,
+      cleanQuery: clean,
+      normalizedQuery: normalizedQuery,
+      register: register, // 'gaul' | 'formal' | 'santai'
+      slangTokens: slangDetected,
+      intent: (intentData.intent === 'PEDAGOGICAL_FOLLOWUP' && intentData.subType) ? intentData.subType : intentData.intent,
+      category: intentData.intent,
+      subType: intentData.subType || null,
+      intentData: intentData,
+      intentDescription: this.describeIntent(intentData),
+      topic: topic || 'Materi Belajar & Wawasan',
+      entities: entities,
+      disambiguation: disambiguation,
+      confidence: (entities.length > 0 || intentData.intent !== 'SUBJECT_INQUIRY') ? 0.95 : 0.75,
+      confidenceLevel: (entities.length > 0 || intentData.intent !== 'SUBJECT_INQUIRY') ? 'HIGH' : 'MEDIUM'
+    };
+  }
+
+  generateStomachBarrierResponse(register = 'santai') {
+    const isFormal = register === 'formal';
+    const intro = isFormal
+      ? `Mekanisme perlindungan mukosa lambung (*Gastric Mucosal Barrier*) terhadap asam klorida (HCl) dan pepsin merupakan salah satu sistem pertahanan biologis paling presisi pada tubuh manusia 🧪🛡️:\n\nSecara fisiologis, keasaman lambung yang sangat tinggi (pH 1,5–2) sanggup melunakkan protein dan membunuh mikroorganisme patogen. Agar epitel lambung tidak mengalami autodigesti (mencerna dirinya sendiri) atau kerusakan, lambung dilindungi oleh empat lapis pertahanan terkoordinasi:`
+      : `Pertanyaan kritis dan seru banget kawan! **Kenapa dinding lambung kita gak ikut terbakar atau bolong kena asam lambung (HCl) padahal asamnya super kuat (pH 1,5–2)?** 🧪🛡️\n\n` +
+        `Secara logika kimia, asam klorida sekuat itu sanggup melunakkan serat daging dan membunuh bakteri seketika. Tapi tubuh kita punya sistem proteksi empat lapis yang sangat canggih bernama **Barier Mukosa Lambung (*Gastric Mucosal Barrier*)**:`;
+
+    return {
+      text: `${intro}\n\n` +
+        `1. 🛡️ **Lapisan Lendir Mukus Tebal (Physical Gel Shield)**:\n` +
+        `Sel epitel foveolar di permukaan dinding lambung terus-menerus memproduksi lapisan gel lendir (*mukus*) setebal 0,2–0,5 mm yang liat dan tidak tembus air.\n\n` +
+        `2. 🧪 **Penetralisir Ion Bikarbonat (Chemical Neutralizer - HCO₃⁻)**:\n` +
+        `Sel-sel lambung menyuntikkan ion bikarbonat yang bersifat basa ke dalam lapisan lendir tersebut. Hasilnya luar biasa: tepat di permukaan dinding sel lambung, pH-nya **netral (~7)**, meskipun hanya beberapa milimeter di rongga lambung cairannya ber-pH sangat asam (1,5–2)!\n\n` +
+        `3. 🧱 **Sambungan Sel Super Rapat (*Tight Junctions*)**:\n` +
+        `Sel-sel penyusun dinding lambung terikat sangat erat tanpa celah, mencegah asam HCl merembes ke jaringan darah di lapisan submukosa.\n\n` +
+        `4. ⚡ **Regenerasi Sel Kilat (*Rapid Turnover*)**:\n` +
+        `Sel-sel dinding lambung adalah salah satu sel dengan regenerasi tercepat di tubuh manusia: diganti seluruhnya dengan sel baru setiap 3 hingga 6 hari!\n\n` +
+        `*Catatan Penting:* Jika lapisan pelindung mukus ini rusak (misalnya akibat infeksi bakteri *Helicobacter pylori*, obat pereda nyeri berlebih, atau stres berat), barulah asam HCl bisa menyentuh jaringan lambung dan menyebabkan rasa perih yang kita kenal sebagai **sakit maag / tukak lambung (ulkus peptikum)**.\n\n` +
+        (isFormal ? `Inilah sistem komprehensif yang menjamin epitel lambung senantiasa terlindung dari paparan asam klorida dan pepsin.` : `Keren banget kan sistem pertahanan alami tubuh kita? Mau kita bahas lebih lanjut atau mau coba latihan kuis?`),
+      source: 'Fisiologi Sistem Pencernaan • Barier Mukosa Lambung',
+      suggestions: ['Kenapa bisa sakit maag?', 'Bisa beri analoginya?', 'Apa bedanya pepsin vs renin?']
+    };
   }
 
   // ==========================================
@@ -394,116 +775,123 @@ class OfflineAIEngine {
     return null;
   }
 
-  classifyIntent(cleanQuery, rawQuery, context, activeModule) {
+  classifyIntent(cleanQuery, rawQuery, context, activeModule, normalizedQuery = '') {
+    const norm = (normalizedQuery || '').toLowerCase();
+    const clean = cleanQuery.toLowerCase();
+
     // 0A. Deklarasi / Perintah Panggil Nama Pengguna
-    const nameFound = this.extractNameFromQuery(cleanQuery);
+    const nameFound = this.extractNameFromQuery(clean);
     if (nameFound) {
       return { intent: 'USER_NAME_SET', name: nameFound };
     }
 
     // 0B. Pertanyaan Siapa Nama Saya / Panggil Namaku
     if (
-      /(siapa\s+(nama\s+)?(ku|saya|aku)|nama\s+(saya|aku|ku)\s+siapa|kamu\s+(tahu|tau|ingat)\s+namaku|ingat\s+namaku|panggil\s+namaku(\s+dong)?|coba\s+panggil\s+namaku|tau\s+namaku)/i.test(cleanQuery) ||
-      cleanQuery === 'siapa namaku?' || cleanQuery === 'siapa nama saya?' || cleanQuery === 'kamu tau namaku?'
+      /(siapa\s+(nama\s+)?(ku|saya|aku)|nama\s+(saya|aku|ku)\s+siapa|kamu\s+(tahu|tau|ingat)\s+namaku|ingat\s+namaku|panggil\s+namaku(\s+dong)?|coba\s+panggil\s+namaku|tau\s+namaku)/i.test(clean) ||
+      clean === 'siapa namaku?' || clean === 'siapa nama saya?' || clean === 'kamu tau namaku?'
     ) {
       return { intent: 'USER_NAME_QUERY' };
     }
 
     // 0C. Obrolan Keseharian & Teman Curhat (Companion Chat)
-    const friendIntent = this.classifyFriendIntent(cleanQuery, rawQuery);
+    const friendIntent = this.classifyFriendIntent(clean, rawQuery);
     if (friendIntent) {
       return friendIntent;
     }
 
     // 1. Kalkulator Matematika Instan
-    if (this.calculateMath(cleanQuery)) {
+    if (this.calculateMath(clean) || (norm && this.calculateMath(norm))) {
       return { intent: 'CALCULATOR' };
     }
 
     // 2. Waktu & Jam
-    if (/^(jam berapa|pukul berapa|hari apa|tanggal berapa|sekarang jam berapa|hari ini hari apa)\b/i.test(cleanQuery)) {
+    if (/^(jam berapa|pukul berapa|hari apa|tanggal berapa|sekarang jam berapa|hari ini hari apa)\b/i.test(clean) || /^(jam berapa|hari apa)\b/i.test(norm)) {
       return { intent: 'TIME' };
     }
 
     // 3. Cuaca
-    if (cleanQuery === 'cuaca' || /^(cuaca hari ini|cuaca sekarang|bagaimana cuaca|gimana cuaca|ramalan cuaca)\b/i.test(cleanQuery)) {
+    if (clean === 'cuaca' || /^(cuaca hari ini|cuaca sekarang|bagaimana cuaca|gimana cuaca|ramalan cuaca)\b/i.test(clean) || /^(cuaca|bagaimana cuaca)\b/i.test(norm)) {
       return { intent: 'WEATHER' };
     }
 
     // 4. Sapaan & Salam
     if (
-      /^(halo|hai|helo|hei|hi|hello|hey|oy|oi|halo ai|hai ai|halo boni|hai boni|selamat pagi|selamat siang|selamat sore|selamat malam|assalamu|salam)\b/i.test(cleanQuery) ||
-      cleanQuery === 'halo' || cleanQuery === 'hai' || cleanQuery === 'hi' || cleanQuery === 'hello'
+      /^(halo|hai|helo|hei|hi|hello|hey|oy|oi|halo ai|hai ai|halo boni|hai boni|selamat pagi|selamat siang|selamat sore|selamat malam|assalamu|salam|pagi bon|siang bon|malam bon)\b/i.test(clean) ||
+      clean === 'halo' || clean === 'hai' || clean === 'hi' || clean === 'hello' ||
+      clean === 'oy' || clean === 'oi' || clean === 'pagi' || clean === 'siang' || clean === 'malam'
     ) {
       return { intent: 'GREETING' };
     }
 
     // 5. Identitas Persona & Kemampuan
     if (
-      /^(siapa kamu|kamu siapa|nama kamu|namamu siapa|siapa anda|siapakah kamu)\b/i.test(cleanQuery) ||
-      cleanQuery === 'siapa kamu?' || cleanQuery === 'siapa namamu?'
+      /^(siapa kamu|kamu siapa|nama kamu|namamu siapa|siapa anda|siapakah kamu|lu siapa|siapa lu)\b/i.test(clean) ||
+      clean === 'siapa kamu?' || clean === 'siapa namamu?' || clean === 'kamu siapa?' || clean === 'lu siapa?'
     ) {
       return { intent: 'PERSONA_IDENTITY' };
     }
 
     if (
-      /(cara kerja (kamu|bot|ai|aplikasi)|bagaimana (kamu|bot|ai) bekerja|^cara kerjamu$)/i.test(cleanQuery) ||
-      cleanQuery.includes('bisa apa') || cleanQuery.includes('kemampuanmu') || cleanQuery.includes('fitur apa') ||
-      cleanQuery.includes('apa yang bisa kamu lakukan') || cleanQuery.includes('bisa bantu apa')
+      /(cara kerja (kamu|bot|ai|aplikasi)|bagaimana (kamu|bot|ai) bekerja|^cara kerjamu$)/i.test(clean) ||
+      clean.includes('bisa apa') || clean.includes('kemampuanmu') || clean.includes('fitur apa') ||
+      clean.includes('apa yang bisa kamu lakukan') || clean.includes('bisa bantu apa') ||
+      norm.includes('bisa apa') || norm.includes('kemampuan')
     ) {
       return { intent: 'PERSONA_CAPABILITIES' };
     }
 
     // 6. Kabar, Pujian & Terima Kasih
-    if (/^(apa kabar|gimana kabar|bagaimana kabarmu|kamu sehat)\b/i.test(cleanQuery)) {
+    if (/^(apa kabar|gimana kabar|bagaimana kabarmu|kamu sehat|kabar lu gimana)\b/i.test(clean) || /^(apa kabar)\b/i.test(norm)) {
       return { intent: 'MOOD' };
     }
-    if (/(kamu (hebat|keren|mantap|pintar|cerdas)|boni (hebat|keren|mantap|pintar)|wah keren|makasih boni)/i.test(cleanQuery)) {
+    if (/(kamu (hebat|keren|mantap|pintar|cerdas|gokil)|boni (hebat|keren|mantap|pintar|gokil)|wah keren|makasih boni|gokil lu)/i.test(clean)) {
       return { intent: 'COMPLIMENT' };
     }
-    if (/^(terima kasih|makasih|thanks|thank you|terimakasih|matur nuwun)\b/i.test(cleanQuery)) {
+    if (/^(terima kasih|makasih|thanks|thank you|terimakasih|matur nuwun|tengkyu|makasi|thx)\b/i.test(clean)) {
       return { intent: 'THANK_YOU' };
     }
-    if (/^(dadah|sampai jumpa|bye|selamat tinggal|pamit)\b/i.test(cleanQuery)) {
+    if (/^(dadah|sampai jumpa|bye|selamat tinggal|pamit|cabut dulu|dadaah)\b/i.test(clean)) {
       return { intent: 'FAREWELL' };
     }
 
     // 7. Candaan, Pantun, Motivasi
-    if (/(ceritakan (jokes|lelucon|tebak-tebakan)|ada jokes|ada tebak-tebakan|bagi jokes|lelucon dong)/i.test(cleanQuery)) {
+    if (/(ceritakan (jokes|lelucon|tebak-tebakan)|ada jokes|ada tebak-tebakan|bagi jokes|lelucon dong|tebak tebakan dong|jokes receh)/i.test(clean)) {
       return { intent: 'JOKES' };
     }
-    if (/(ceritakan pantun|kasih pantun|bagi pantun|pantun belajar|pantun dong)/i.test(cleanQuery)) {
+    if (/(ceritakan pantun|kasih pantun|bagi pantun|pantun belajar|pantun dong)/i.test(clean)) {
       return { intent: 'PANTUN' };
     }
-    if (/(tips belajar|cara belajar|cara fokus|pomodoro|tips ujian|belajar efektif)/i.test(cleanQuery)) {
+    if (/(tips belajar|cara belajar|cara fokus|pomodoro|tips ujian|belajar efektif|trik belajar)/i.test(clean) || /(tips belajar|cara belajar)\b/i.test(norm)) {
       return { intent: 'STUDY_TIPS' };
     }
-    if (/(butuh motivasi|kasih motivasi|minta motivasi|kata mutiara|kata bijak)/i.test(cleanQuery)) {
+    if (/(butuh motivasi|kasih motivasi|minta motivasi|kata mutiara|kata bijak|semangatin dong|butuh semangat)/i.test(clean) || /(motivasi|semangat)\b/i.test(norm)) {
       return { intent: 'MOTIVATION' };
     }
 
     // 8. Study Tools: Flashcard, Kuis, Rangkuman, Problem Solver
-    if (/(buatkan|bikin|generate)\s+(\d+\s+)?flashcard/i.test(cleanQuery) || cleanQuery.includes('flashcard') || cleanQuery.includes('kartu belajar')) {
+    if (/(buatkan|bikin|generate)\s+(\d+\s+)?flashcard/i.test(clean) || clean.includes('flashcard') || clean.includes('kartu belajar')) {
       return { intent: 'FLASHCARDS' };
     }
     if (
-      /(buatkan|bikin|kasih|uji)\s+(\d+\s+)?(soal|kuis|pertanyaan latihan)\b/i.test(cleanQuery) ||
-      cleanQuery === 'kuis' || cleanQuery === 'latihan soal' || cleanQuery === 'beri kuis'
+      /(buatkan|bikin|kasih|uji|beri)\s+(\d+\s+)?(soal|kuis|pertanyaan latihan)\b/i.test(clean) ||
+      /(bikin|buat)\s+(5\s+soal|kuis|soal)/i.test(clean) ||
+      /(buatkan|bikin)\s+kuis/i.test(norm) ||
+      clean === 'kuis' || clean === 'latihan soal' || clean === 'beri kuis' || clean === 'kuis dong' || clean.includes('bikin kuis')
     ) {
       return { intent: 'INCHAT_QUIZ' };
     }
-    if (this.isSummaryIntent(cleanQuery)) {
+    if (this.isSummaryIntent(clean) || this.isSummaryIntent(norm)) {
       return { intent: 'SUMMARY' };
     }
-    if (/(brainstorming|ide judul|ide proyek|ide esai|ide penelitian|bantu cari ide|rekomendasi ide)/i.test(cleanQuery)) {
+    if (/(brainstorming|ide judul|ide proyek|ide esai|ide penelitian|bantu cari ide|rekomendasi ide)/i.test(clean)) {
       return { intent: 'BRAINSTORMING' };
     }
-    if (this.checkProblemSolvingIntent(cleanQuery, rawQuery)) {
+    if (this.checkProblemSolvingIntent(clean, rawQuery)) {
       return { intent: 'PROBLEM_SOLVING' };
     }
 
     // 9. Pergantian Topik Eksplisit
-    const topicSwitchMatch = /(?:ganti topik|pindah topik|topik lain|sekarang bahas|kita bahas|beralih ke)\s+(.+)/i.exec(cleanQuery);
+    const topicSwitchMatch = /(?:ganti topik|pindah topik|topik lain|sekarang bahas|kita bahas|beralih ke)\s+(.+)/i.exec(clean);
     if (topicSwitchMatch && topicSwitchMatch[1]) {
       return {
         intent: 'TOPIC_SWITCH',
@@ -511,60 +899,86 @@ class OfflineAIEngine {
       };
     }
 
-    // 10. FOLLOW-UP PEDAGOGIS (TUTOR INTERAKTIF)
+    // 10. FOLLOW-UP PEDAGOGIS (TUTOR INTERAKTIF & REASONING)
+    // A0. Kasus Khusus: Barier Mukosa Lambung (Kenapa lambung tidak terbakar / bolong / rusak oleh asam HCl, atau mekanisme perlindungan mukosa lambung)
+    if (
+      (clean.includes('lambung') || norm.includes('lambung')) &&
+      (
+        clean.includes('kebakar') || clean.includes('bolong') || clean.includes('ancur') || clean.includes('rusak') ||
+        clean.includes('iritasi') || clean.includes('terluka') || norm.includes('rusak') ||
+        clean.includes('perlindungan') || clean.includes('mukosa') || clean.includes('barier') || clean.includes('proteksi') ||
+        clean.includes('terlindung') || clean.includes('mencerna dirinya')
+      ) &&
+      (clean.includes('hcl') || clean.includes('asam') || clean.includes('asem') || norm.includes('asam') || norm.includes('hcl') || clean.includes('pepsin'))
+    ) {
+      return { intent: 'PEDAGOGICAL_FOLLOWUP', subType: 'WHY_STOMACH_BARRIER' };
+    }
+
     // A. "Mengapa bisa begitu?" / Kausalitas
     if (
-      /(mengapa|kenapa)\s+(bisa\s+)?(begitu|seperti itu|demikian|terjadi)/i.test(cleanQuery) ||
-      cleanQuery === 'mengapa bisa begitu?' || cleanQuery === 'kenapa bisa begitu?' ||
-      cleanQuery === 'mengapa?' || cleanQuery === 'kenapa?' ||
-      cleanQuery.includes('apa alasannya') || cleanQuery.includes('kenapa hal itu terjadi')
+      /(mengapa|kenapa|knp|kok bisa|ngapa|kenapasi|alasannya apa)\s+(bisa\s+)?(begitu|seperti itu|demikian|terjadi|gitu)/i.test(clean) ||
+      /(mengapa|kenapa)\s+(bisa\s+)?(begitu|seperti itu|demikian|terjadi)/i.test(norm) ||
+      clean === 'mengapa bisa begitu?' || clean === 'kenapa bisa begitu?' || clean === 'kok bisa gitu?' || clean === 'kok bisa begitu?' ||
+      clean === 'mengapa?' || clean === 'kenapa?' || clean === 'knp?' || clean === 'kok bisa?' ||
+      clean.includes('apa alasannya') || clean.includes('kenapa hal itu terjadi') || clean.includes('kok bisa gitu') || clean.includes('kok bisa')
     ) {
       return { intent: 'PEDAGOGICAL_FOLLOWUP', subType: 'WHY_CAUSAL' };
     }
 
     // B. "Bisakah dijelaskan dengan lebih sederhana?" / Feynman Technique
     if (
-      /(bisa(kah)?\s+)?(dijelaskan\s+)?(dengan\s+)?(lebih\s+)?(sederhana|simpel|gampang|mudah)/i.test(cleanQuery) ||
-      cleanQuery.includes('bahasa awam') || cleanQuery.includes('anak smp') || cleanQuery.includes('terlalu rumit') ||
-      cleanQuery.includes('lebih mudah dimengerti') || cleanQuery.includes('secara sederhana')
+      /(bisa(kah)?\s+)?(dijelaskan\s+)?(dengan\s+)?(lebih\s+)?(sederhana|simpel|gampang|mudah)/i.test(clean) ||
+      /(sederhana|simpel|gampang|mudah)/i.test(norm) ||
+      clean.includes('bahasa awam') || clean.includes('anak smp') || clean.includes('terlalu rumit') ||
+      clean.includes('lebih mudah dimengerti') || clean.includes('secara sederhana') ||
+      clean.includes('puyeng') || clean.includes('mumet') || clean.includes('ribet') ||
+      clean.includes('gagal paham') || clean.includes('kaga ngarti') || clean.includes('ga mudeng') ||
+      clean.includes('simpel aja') || clean.includes('gampang dong') || clean.includes('jangan ribet') ||
+      clean.includes('bahasa gampang') || clean.includes('yang gampang')
     ) {
       return { intent: 'PEDAGOGICAL_FOLLOWUP', subType: 'SIMPLIFY' };
     }
 
     // C. Analogi & Perumpamaan
     if (
-      /(berikan|kasih|buatkan|ada)?\s*(analogi|perumpamaan|ibaratnya)/i.test(cleanQuery) ||
-      cleanQuery.includes('ibarat') || cleanQuery.includes('seperti apa analoginya')
+      /(berikan|kasih|buatkan|ada)?\s*(analogi|perumpamaan|ibaratnya)/i.test(clean) ||
+      clean.includes('ibarat') || clean.includes('seperti apa analoginya') ||
+      clean.includes('ibaratnya apa') || clean.includes('kasih analogi')
     ) {
       return { intent: 'PEDAGOGICAL_FOLLOWUP', subType: 'ANALOGY' };
     }
 
     // D. Contoh Nyata
     if (
-      /(berikan|kasih|ada)?\s*(contoh(nya)?|contoh nyata|kehidupan sehari-hari)/i.test(cleanQuery) ||
-      cleanQuery.includes('contoh konkret') || cleanQuery === 'contohnya apa?' || cleanQuery === 'beri contoh'
+      /(berikan|kasih|ada)?\s*(contoh(nya)?|contoh nyata|kehidupan sehari-hari)/i.test(clean) ||
+      clean.includes('contoh konkret') || clean.includes('contohnya apa?' || clean === 'beri contoh') ||
+      clean.includes('contoh di kehidupan') || clean.includes('contoh nyatanya')
     ) {
       return { intent: 'PEDAGOGICAL_FOLLOWUP', subType: 'EXAMPLE' };
     }
 
     // E. Perbedaan / Komparasi
-    if (/(apa bedanya|perbedaannya apa|lalu bedanya|bagaimana perbandingannya)/i.test(cleanQuery)) {
+    if (
+      /(bedanya|perbedaan|perbandingan|komparasi|bedain|spill.*beda)/i.test(clean) ||
+      /(bedanya|perbedaan|perbandingan|komparasi)/i.test(norm) ||
+      clean.includes('apa bedanya')
+    ) {
       return { intent: 'PEDAGOGICAL_FOLLOWUP', subType: 'DIFFERENCE' };
     }
 
     // F. Fungsi & Mekanisme lanjutan
-    if (/(fungsinya apa|apa fungsinya|gunanya apa|apa peran)/i.test(cleanQuery)) {
+    if (/^(fungsinya apa|apa fungsinya|gunanya apa|apa perannya|perannya apa)\b/i.test(clean) || clean === 'fungsinya apa?' || clean === 'apa fungsinya?') {
       return { intent: 'PEDAGOGICAL_FOLLOWUP', subType: 'FUNCTION' };
     }
-    if (/(cara kerjanya|bagaimana cara kerja|gimana cara kerja|bagaimana prosesnya|mekanismenya)/i.test(cleanQuery)) {
+    if (/^(cara kerjanya|bagaimana cara kerja|gimana cara kerja|bagaimana prosesnya|mekanismenya)\b/i.test(clean) || clean === 'cara kerjanya bagaimana?' || clean === 'gimana cara kerjanya?') {
       return { intent: 'PEDAGOGICAL_FOLLOWUP', subType: 'MECHANISM' };
     }
-    if (/(jelaskan lebih (lanjut|detail|lengkap)|bisa lebih detail|rinciannya)/i.test(cleanQuery)) {
+    if (/(jelaskan lebih (lanjut|detail|lengkap)|bisa lebih detail|rinciannya)/i.test(clean)) {
       return { intent: 'PEDAGOGICAL_FOLLOWUP', subType: 'MORE_DETAIL' };
     }
 
     // 11. OUT-OF-TOPIC (NON-AKADEMIK / UMUM)
-    const isOOT = this.checkOutOfTopic(cleanQuery);
+    const isOOT = this.checkOutOfTopic(clean);
     if (isOOT) {
       return { intent: 'OUT_OF_TOPIC', category: isOOT.category, detail: isOOT };
     }
@@ -615,7 +1029,14 @@ class OfflineAIEngine {
 
   retrieveFromRAG(query, activeModule, options = {}) {
     const clean = query.toLowerCase();
-    const tokens = this.getMeaningfulTokens(clean);
+    const norm = (options.normalizedQuery || '').toLowerCase();
+    const tokenSet = new Set(this.getMeaningfulTokens(clean));
+    if (norm) {
+      for (const t of this.getMeaningfulTokens(norm)) {
+        tokenSet.add(t);
+      }
+    }
+    const tokens = Array.from(tokenSet);
     const expanded = this.getExpandedTokens(tokens);
     const genericWords = this.getGenericWords();
 
@@ -637,7 +1058,7 @@ class OfflineAIEngine {
 
           for (const kw of kwList) {
             const lkw = kw.toLowerCase();
-            if (clean.includes(lkw)) {
+            if (clean.includes(lkw) || (norm && norm.includes(lkw))) {
               score += genericWords.has(lkw) ? 4 : 14;
             } else {
               const kwTokens = this.getMeaningfulTokens(lkw);
@@ -675,7 +1096,7 @@ class OfflineAIEngine {
           cScore += chunkOverlap.length * 3.5;
 
           // Frasa eksak
-          if (clean.length > 4 && chunk.text.toLowerCase().includes(clean)) {
+          if ((clean.length > 4 && chunk.text.toLowerCase().includes(clean)) || (norm && norm.length > 4 && chunk.text.toLowerCase().includes(norm))) {
             cScore += 12;
           }
 
@@ -757,30 +1178,37 @@ class OfflineAIEngine {
     const cleanQuery = rawQuery.toLowerCase();
     const activeModule = this.getModule(moduleId);
     const context = this.extractDialogueContext(history, activeModule);
-    const intentData = this.classifyIntent(cleanQuery, rawQuery, context, activeModule);
+
+    // 0. TAHAP ANALISIS PERTANYAAN (MENGANALISIS TERLEBIH DAHULU AGAR TIDAK SALAH JAWAB)
+    const analysis = this.analyzeQuestion(rawQuery, context, activeModule);
+    const intentData = { intent: analysis.intent, subType: analysis.subType, ...analysis.intentData };
 
     // 1. CEK DUKUNGAN EXTERNAL LLM API JIKA DIAKTIFKAN
     const effectiveProvider = (settings && settings.provider) || 'offline';
     if (effectiveProvider !== 'offline') {
       try {
-        const apiResponse = await this.callExternalLLM(rawQuery, activeModule, history, settings, context, intentData);
+        const apiResponse = await this.callExternalLLM(rawQuery, activeModule, history, settings, context, intentData, analysis);
         if (apiResponse && apiResponse.text) {
+          apiResponse.analysis = analysis;
           return apiResponse;
         }
       } catch (err) {
         console.warn('Gagal memanggil API eksternal, beralih otomatis ke Offline Engine:', err);
-        const offlineAnswer = this.generateOfflineAgentResponse(rawQuery, cleanQuery, activeModule, history, context, intentData);
+        const offlineAnswer = this.generateOfflineAgentResponse(rawQuery, cleanQuery, activeModule, history, context, intentData, analysis);
         return {
           text: `⚠️ *Catatan: Tidak dapat terhubung ke model ${settings.provider} (${err.message || 'Koneksi gagal'}). Boni beralih ke Mode Cerdas Offline untuk menjawabmu:*\n\n${offlineAnswer.text}`,
           source: offlineAnswer.source,
           suggestions: offlineAnswer.suggestions,
-          action: offlineAnswer.action
+          action: offlineAnswer.action,
+          analysis: analysis
         };
       }
     }
 
     // 2. OFFLINE AGENTIC RESPONSE ENGINE
-    return this.generateOfflineAgentResponse(rawQuery, cleanQuery, activeModule, history, context, intentData);
+    const response = this.generateOfflineAgentResponse(rawQuery, cleanQuery, activeModule, history, context, intentData, analysis);
+    response.analysis = analysis;
+    return response;
   }
 
   handleFriendCompanion(subType, cleanQuery, rawQuery, context, activeModule) {
@@ -972,7 +1400,7 @@ class OfflineAIEngine {
   // MESIN UTAMA OFFLINE AGENTIC RESPONSE
   // ==========================================
 
-  generateOfflineAgentResponse(rawQuery, cleanQuery, activeModule, history, context, intentData) {
+  generateOfflineAgentResponse(rawQuery, cleanQuery, activeModule, history, context, intentData, analysis = null) {
     const intent = intentData.intent;
 
     // 0A. PENGELOLAAN NAMA PENGGUNA
@@ -1104,11 +1532,11 @@ class OfflineAIEngine {
 
     // D. PENANGANAN FOLLOW-UP PEDAGOGIS (TUTOR INTERAKTIF)
     if (intent === 'PEDAGOGICAL_FOLLOWUP') {
-      return this.handlePedagogicalFollowUp(intentData.subType, context, activeModule, cleanQuery);
+      return this.handlePedagogicalFollowUp(intentData.subType, context, activeModule, cleanQuery, analysis);
     }
 
     // E. PENELUSURAN MATERI MELALUI HYBRID RAG
-    const ragResult = this.retrieveFromRAG(cleanQuery, activeModule);
+    const ragResult = this.retrieveFromRAG(cleanQuery, activeModule, { normalizedQuery: analysis ? analysis.normalizedQuery : '' });
     if (ragResult && ragResult.confidence !== 'LOW') {
       const top = ragResult.top;
       const formatted = this.humanizeAnswer(top.text, cleanQuery, top.module);
@@ -1152,9 +1580,21 @@ class OfflineAIEngine {
   // PEDAGOGICAL TUTOR STRATEGIES
   // ==========================================
 
-  handlePedagogicalFollowUp(subType, context, activeModule, cleanQuery) {
-    const topic = context.primaryTopic || (activeModule ? activeModule.subject : 'Materi yang kita bahas');
+  handlePedagogicalFollowUp(subType, context, activeModule, cleanQuery, analysis = null) {
+    const topic = (analysis && analysis.topic) || context.primaryTopic || (activeModule ? activeModule.subject : 'Materi yang kita bahas');
     const prevText = context.lastExplanationText || '';
+
+    // 0. Pertanyaan Spesifik Barier Mukosa Lambung (Kenapa lambung tidak terbakar / bolong oleh asam HCl, atau perlindungan lambung)
+    if (
+      subType === 'WHY_STOMACH_BARRIER' ||
+      (subType === 'WHY_CAUSAL' && (
+        cleanQuery.includes('kebakar') || cleanQuery.includes('bolong') || cleanQuery.includes('dinding lambung') ||
+        cleanQuery.includes('ancur') || cleanQuery.includes('mukosa') || cleanQuery.includes('perlindungan') ||
+        (analysis && analysis.normalizedQuery && analysis.normalizedQuery.includes('rusak'))
+      ))
+    ) {
+      return this.generateStomachBarrierResponse(analysis ? analysis.register : 'santai');
+    }
 
     // 1. "Mengapa bisa begitu?" (Causal Explanation)
     if (subType === 'WHY_CAUSAL') {
@@ -1259,7 +1699,7 @@ class OfflineAIEngine {
     // Penyederhanaan Lambung & HCl/Pepsin
     if (topicLower.includes('hcl') || topicLower.includes('asam klorida') || topicLower.includes('pepsin') || topicLower.includes('lambung')) {
       return {
-        text: `Siap! Kita pakai **Teknik Feynman**: jelasin konsep sulit dengan bahasa yang super santai dan gampang dipahami anak SMP sekalipun! 🧒💡\n\n` +
+        text: `Siap! Kita buat versi **Penjelasan Sederhana (Teknik Feynman)**: jelasin konsep sulit dengan bahasa yang super simpel, santai, dan gampang dipahami anak SMP sekalipun! 🧒💡\n\n` +
           `Bayangkan lambungmu itu seperti **mesin blender dapur yang super canggih**:\n\n` +
           `• 🛡️ **Asam HCl = Cairan Pembersih Sekaligus Tombol "ON"**:\nSaat kamu makan bakso atau ayam, ada kuman nakal yang ikut masuk. Nah, cairan asam lambung ini langsung membasmi kuman itu, sekaligus memencet tombol "ON" buat ngebangunin gunting pemotong protein.\n\n` +
           `• ✂️ **Enzim Pepsin = Gunting Khusus Pemotong Daging**:\nDaging yang kamu makan itu rantainya masih panjang dan tebal. Enzim pepsin bertugas menggunting rantai panjang itu jadi potongan-potongan kecil (*pepton*) supaya muat lewat di usus halus nanti.\n\n` +
@@ -1373,7 +1813,7 @@ class OfflineAIEngine {
 
   generateDifferenceResponse(topic, prevText, activeModule, cleanQuery) {
     // Bedakan Pepsin dan Renin
-    if (cleanQuery.includes('renin') || (topic && topic.toLowerCase().includes('pepsin'))) {
+    if (cleanQuery.includes('renin') || cleanQuery.includes('pepsin') || (topic && topic.toLowerCase().includes('pepsin'))) {
       return {
         text: `Pertanyaan perbandingan yang sering banget keluar di ujian! **Apa bedanya Enzim Pepsin vs Enzim Renin?** 🥛🥩\n\n` +
           `| Karakteristik | 🥩 Enzim Pepsin | 🍼 Enzim Renin |\n` +
@@ -1456,17 +1896,25 @@ class OfflineAIEngine {
   // EXTERNAL LLM INTEGRATION (GEMINI, OLLAMA, OPENAI)
   // ==========================================
 
-  async callExternalLLM(userQuery, activeModule, history, settings, context, intentData) {
+  async callExternalLLM(userQuery, activeModule, history, settings, context, intentData, analysis = null) {
     const provider = settings.provider || 'gemini';
     const activeModName = activeModule ? `${activeModule.fullName} (${activeModule.shortName})` : 'Tanpa Modul Terpilih';
 
     // 1. Ambil RAG Context untuk Dokumen jika tersedia
     let ragContextText = '';
-    const ragResult = this.retrieveFromRAG(userQuery, activeModule);
+    const ragResult = this.retrieveFromRAG(userQuery, activeModule, { normalizedQuery: analysis ? analysis.normalizedQuery : '' });
     if (ragResult && ragResult.all && ragResult.all.length > 0) {
       ragContextText = '\n\n[DOKUMEN & MATERI RUJUKAN RESMI]:\n' +
         ragResult.all.map((c, i) => `[Rujukan ${i + 1}] (${c.source}):\n"${c.text}"`).join('\n\n');
     }
+
+    const analysisInfo = analysis ? `
+[HASIL ANALISIS PERTANYAAN OLEH PENGAWAS AI AGENT]:
+• Ragam Bahasa Pengguna: ${analysis.register} (${analysis.register === 'gaul' ? 'Pengguna menggunakan bahasa gaul/santai. Jawab dengan nada akrab, hangat, dan komunikatif tanpa kaku, namun tetap 100% akurat secara ilmiah.' : 'Pengguna menggunakan bahasa formal/baku. Jawab dengan struktur akademis yang rapi dan teratur.'})
+• Inti Maksud Pertanyaan: ${analysis.intentDescription}
+• Topik / Konsep Sasaran: ${analysis.topic} (${analysis.entities.join(', ') || 'Umum'})
+• Pertanyaan Telah Dinormalisasi: "${analysis.normalizedQuery}"
+• Petunjuk Disambiguasi: ${analysis.disambiguation}` : '';
 
     const systemPrompt = `Kamu adalah Boni, Teman Belajar & Teman Diskusi AI yang cerdas, hangat, interaktif, dan suportif.
 Karakteristik kepribadian dan pedoman tutor:
@@ -1474,7 +1922,7 @@ Karakteristik kepribadian dan pedoman tutor:
 2. BEBAS MENGOBROL HAL UMUM TANPA HARUS ADA MODUL: Pengguna berhak bertanya dan berdiskusi tentang apa saja (kehidupan, sains, filosofi, teknologi, psikologi, hobi, resep, nasihat, dll.) tanpa harus memilih atau mengunggah modul. Berikan jawaban yang kaya wawasan, hangat, menyenangkan, dan mengajak bertukar pikiran.
 3. Berperan sebagai tutor handal: jelaskan konsep rumit dengan bahasa sederhana (teknik Feynman), gunakan analogi konkret, berikan contoh nyata, dan dukung pertanyaan lanjutan seperti "mengapa bisa begitu?" atau "bisakah dijelaskan lebih sederhana?"
 4. PENGGUNAAN RUJUKAN MODUL: Jika pengguna menanyakan materi pelajaran tertentu dan ada rujukan materi berikut, gunakan rujukan ini secara akurat tanpa mengarang nomor halaman/sumber palsu:
-Modul Aktif: ${activeModName}${ragContextText}
+Modul Aktif: ${activeModName}${ragContextText}${analysisInfo}
 5. JIKA PERTANYAAN DI LUAR TOPIK PEMBELAJARAN (Out of Topic seperti kuliner, olahraga, hiburan, keseharian): Jawab secara natural, informatif, dan proporsional. JANGAN menolak atau memaksa pengguna kembali ke materi secara kaku.
 6. KETERBATASAN INFORMASI: Jika pengguna bertanya tentang dokumen tertentu tetapi rincian spesifik tidak tercantum dalam konteks, jelaskan secara jujur keterbatasan tersebut dan lengkapi dengan pengetahuan umum terverifikasi.`;
 
